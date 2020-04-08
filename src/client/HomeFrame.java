@@ -2,13 +2,11 @@ package client;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.ArrayList;
-
 
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
@@ -20,7 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
-
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -44,8 +41,8 @@ public class HomeFrame extends JFrame {
 	private static HomeFrame HomeF = null;
 
 	
-	
-	private ArrayList<MemberDTO> memberList = null;
+	private ArrayList<Object> objectList = new ArrayList<>();
+//	private ArrayList<MemberDTO> memberList = null;
 	
 	
 	
@@ -61,7 +58,7 @@ public class HomeFrame extends JFrame {
 		this.setBounds(200, 100, 500, 500);
 
 		createTimeline();
-		createMyPage();
+		createProfile();
 		createDirectMessage();
 		createSearch();
 		createTabbledP();
@@ -119,13 +116,16 @@ public class HomeFrame extends JFrame {
 		tab_1.add(timeline_5);
 	}
 
-	private void createMyPage() {
+	private void createProfile() {
 		// TODO Auto-generated method stub
 		nowCc.send("myPage:" + nowId);
-		MemberDTO my = (MemberDTO) nowCc.receiveObject(); // ? 왜 다시 디비를 뒤져쓰까 ??????? // 생각해 보쟈
+		// nowCc.receiveObject(); // ? 왜 다시 디비를 뒤져쓰까 ??????? // 생각해 보쟈
+		objectList.add(nowCc.receiveObject());
 
 		nowCc.send("setList:member/" + nowId);
-		memberList = (ArrayList<MemberDTO>) nowCc.receiveObject();
+		
+		objectList.add(nowCc.receiveObject());
+		//memberList = (ArrayList<MemberDTO>) nowCc.receiveObject();
 //		for (MemberDTO m : memberList) { // 리스트가 오는지 확인
 //			System.out.println(m.getId());
 //		}
@@ -137,10 +137,10 @@ public class HomeFrame extends JFrame {
 		tab_2.setLayout(new BorderLayout());
 		JLabel temp = new JLabel();
 
-		if (my != null) {
+		if (objectList.get(0) != null) {
 			temp.setText("MyId:" + nowId);
 			tab_2.add(temp, "Center");
-		} else if (my == null) {
+		} else if (objectList.get(0) == null) {
 			temp.setText("");
 			tab_2.add(temp, "Center");
 		}
@@ -169,7 +169,7 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void createSearchData(JTextField txtInput) {
-		setupAutoComplete(txtInput, memberList);
+		setupAutoComplete(txtInput, objectList.get(1));
 		txtInput.setColumns(30);
 	}
 
@@ -184,7 +184,7 @@ public class HomeFrame extends JFrame {
 		cbInput.putClientProperty("is_adjusting", adjusting);
 	}
 
-	private void setupAutoComplete(final JTextField txtInput, final ArrayList<MemberDTO> items) {
+	private void setupAutoComplete(final JTextField txtInput, final Object items) {
 		final DefaultComboBoxModel model = new DefaultComboBoxModel();
 		final JComboBox cbInput = new JComboBox(model) {
 			public Dimension getPreferredSize() {
@@ -192,7 +192,8 @@ public class HomeFrame extends JFrame {
 			}
 		};
 		setAdjusting(cbInput, false);
-		for (MemberDTO item : items) {
+		//ArrayList<MemberDTO> m= (ArrayList<MemberDTO>) items;
+		for (MemberDTO item : (ArrayList<MemberDTO>) items) {
 			model.addElement((String)item.getId());
 		}
 		cbInput.setSelectedItem(null);
@@ -247,8 +248,9 @@ public class HomeFrame extends JFrame {
 				model.removeAllElements();
 				String input = txtInput.getText();
 				if (!input.isEmpty()) {
-					for (MemberDTO item : items) {
-						if (item.getId().toLowerCase().startsWith(input.toLowerCase())) {
+					for (MemberDTO item : (ArrayList<MemberDTO>) items) {
+						if (item.getId().toLowerCase().indexOf(input.toLowerCase()) != -1) {
+						//if (item.getId().toLowerCase().startsWith(input.toLowerCase())) {
 							model.addElement(item.getId());
 						}
 					}
