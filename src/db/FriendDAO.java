@@ -1,6 +1,7 @@
 package db;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -10,16 +11,16 @@ public class FriendDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-	
+
 	private static FriendDAO FriendDAO = null;
-	
-	private FriendDAO(){
-		
+
+	private FriendDAO() {
+
 	}
-	
+
 	public static FriendDAO getInstance(Connection c) {
 		con = c;
-		if(FriendDAO==null) {
+		if (FriendDAO == null) {
 			FriendDAO = new FriendDAO();
 		}
 		return FriendDAO;
@@ -27,13 +28,44 @@ public class FriendDAO implements DAOInterface {
 
 	@Override
 	public boolean insert(Object DTO) {
-		// TODO Auto-generated method stub
+		try {
+			FriendDTO f = (FriendDTO) DTO;
+			String sql = "insert into friend values(?, ?)";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, f.getMyId());
+			psmt.setString(2, f.getYourId());
+
+			int a = psmt.executeUpdate();
+
+			if (a > 0) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
 	@Override
 	public boolean select(Object DTO) {
 		// TODO Auto-generated method stub
+		try {
+			FriendDTO f = null;
+			String sql = "select * from friend";
+			stmt = con.createStatement();
+			rs = stmt.executeQuery(sql);
+			
+			while(rs.next()) {
+				f = new FriendDTO();
+				f.setMyId(rs.getString("myid"));
+				f.setYourId(rs.getString("yourid"));
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+
 		return false;
 	}
 
@@ -44,9 +76,9 @@ public class FriendDAO implements DAOInterface {
 		try {
 			String sql = "select * from friend";
 			stmt = con.prepareStatement(sql);
-			if (stmt!=null) {
+			if (stmt != null) {
 				rs = stmt.executeQuery(sql);
-				while(rs.next()) {
+				while (rs.next()) {
 					
 				}
 			}
@@ -60,8 +92,28 @@ public class FriendDAO implements DAOInterface {
 
 	@Override
 	public Object select(String s) {
-		// TODO Auto-generated method stub
-		return false;
+		FriendDTO f = null;
+		ArrayList<FriendDTO> frList = new ArrayList<>();
+		String sql = "select yourid from friend where myid=?";
+		PreparedStatement psmt;
+		try {
+			psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
+			rs = psmt.executeQuery();
+			
+			while(rs.next()) {
+				f = new FriendDTO();
+				f.setMyId(rs.getString("myid"));
+				f.setYourId(rs.getString("yourid"));
+				frList.add(f);
+			}
+			return frList;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return null;
 	}
+
 
 }

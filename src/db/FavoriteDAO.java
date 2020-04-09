@@ -10,16 +10,16 @@ public class FavoriteDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-	
+
 	private static FavoriteDAO FavoriteDAO = null;
-	
-	private FavoriteDAO(){
-		
+
+	private FavoriteDAO() {
+
 	}
-	
+
 	public static FavoriteDAO getInstance(Connection c) {
 		con = c;
-		if(FavoriteDAO==null) {
+		if (FavoriteDAO == null) {
 			FavoriteDAO = new FavoriteDAO();
 		}
 		return FavoriteDAO;
@@ -44,10 +44,10 @@ public class FavoriteDAO implements DAOInterface {
 		try {
 			String sql = "select * from post";
 			stmt = con.prepareStatement(sql);
-			if (stmt!=null) {
+			if (stmt != null) {
 				rs = stmt.executeQuery(sql);
-				while(rs.next()) {
-					
+				while (rs.next()) {
+
 				}
 			}
 		} catch (SQLException e) {
@@ -63,8 +63,5 @@ public class FavoriteDAO implements DAOInterface {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
-
-	
 
 }

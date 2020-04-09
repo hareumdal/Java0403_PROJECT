@@ -8,6 +8,7 @@ public interface DAOInterface {
 	
 	Object select(String s);
 	
-	Object getDBList(String tName);
+	Object getDBList(String boject);
+	
 
 }

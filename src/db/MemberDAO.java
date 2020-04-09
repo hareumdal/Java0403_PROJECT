@@ -150,4 +150,6 @@ public class MemberDAO implements DAOInterface {
 		return mList;
 	}
 
+
+
 }
