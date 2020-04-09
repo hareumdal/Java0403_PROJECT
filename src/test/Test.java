@@ -1,66 +1,59 @@
 package test;
 
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.GridBagLayout;
+import java.awt.BorderLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
-import javax.swing.BoxLayout;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.border.EmptyBorder;
-
-import client.onePost;
 
 public class Test extends JFrame {
 
-	private JPanel contentPane;
-
-	/**
-	 * Launch the application.
-	 */
 	public static void main(String[] args) {
-		EventQueue.invokeLater(new Runnable() {
-			public void run() {
-				try {
-					Test frame = new Test();
-					frame.setVisible(true);
-				} catch (Exception e) {
-					e.printStackTrace();
+		// TODO Auto-generated method stub
+		new Test();
+
+	}
+	
+	Test() {
+		this.setLayout(new BorderLayout());
+		this.setBounds(0, 0, 300, 300);
+		
+		this.setLocationRelativeTo(null);
+		
+		JPanel temp = new JPanel();
+		JButton btn = new JButton("OK");
+		
+		temp.add(btn);
+		this.add(temp, "Center");
+		
+		this.setVisible(true);
+		this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
+		
+		btn.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(btn.getText().equals("OK")) {
+					System.out.println("****");
+					btn.setText("NO");
+				} else if(btn.getText().equals("NO")) {
+					System.out.println("&&&&");
+					btn.setText("OK");
 				}
 			}
 		});
+		
+		/* component text에 underline 긋기
+		JLabel main = new JLabel("Sign in");
+		main.setBounds(125, 15, 50, 20);
+		main.setFont(new Font("Dialog", Font.BOLD, 20));
+		System.out.println(main.getFont());
+		this.add(main);
+		*/
+		
 	}
 
-	/**
-	 * Create the frame.
-	 */
-	public Test() {
-//		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-//		setBounds(100, 100, 687, 468);
-//		contentPane = new JPanel();
-//		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
-//		setContentPane(contentPane);
-//		contentPane.setLayout(null);
-//
-//		JScrollPane scrollPane = new JScrollPane();
-//		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//		scrollPane.setBorder(null);
-//		scrollPane.setBounds(12, 0, 533, 430);
-//		scrollPane.setPreferredSize(new Dimension(450, 1000));
-//		contentPane.add(scrollPane);
-//
-//		JPanel panel = new JPanel();
-//		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-//		
-//		// scrollPane.add(panel); // 직접 추가하지 않아도 되나봄 걍 보여주는 건=> scrollPane.setViewportView(panel);
-//		scrollPane.setViewportView(panel);
-//
-//		onePost post = new onePost();
-//
-//		for (int i = 0; i < 20; i++) { // 내가 팔로잉 하는 사람들이 올린 글 만큼 추가하자!!
-//			panel.add(post.createPost());
-//		}
-	}
 }

@@ -1,4 +1,4 @@
-package client;
+package frame;
 
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -11,6 +11,8 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JTextField;
 
+import client.ClientChat;
+
 public class JoinFrame extends JFrame {
 	private JLabel idLabel, pwdLabel, phLabel;
 	private String[] labelText = {"　ID", " PWD", "PHONE"};
@@ -21,8 +23,9 @@ public class JoinFrame extends JFrame {
 	
 	private ClientChat cc = null;
 	
-	JoinFrame(ClientChat cc){
+	public JoinFrame(ClientChat cc){
 		super("Join");
+		setResizable(false);
 		this.cc = cc;
 		Frame();
 	}
@@ -131,8 +134,9 @@ public class JoinFrame extends JFrame {
 					}
 				}
 				cc.chkSet(msg);
+				
 				if(cc.getChkMessage().indexOf("true")!=-1){
-					setVisible(false);
+					dispose();
 				}
 			}
 		});
@@ -142,7 +146,7 @@ public class JoinFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				setVisible(false);
+				dispose();
 			}
 		});
 	}

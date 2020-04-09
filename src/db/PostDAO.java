@@ -11,16 +11,16 @@ public class PostDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-
+	
 	private static PostDAO PostDAO = null;
-
-	private PostDAO() {
-
+	
+	private PostDAO(){
+		
 	}
-
+	
 	public static PostDAO getInstance(Connection c) {
 		con = c;
-		if (PostDAO == null) {
+		if(PostDAO==null) {
 			PostDAO = new PostDAO();
 		}
 		return PostDAO;
@@ -50,18 +50,35 @@ public class PostDAO implements DAOInterface {
 
 	@Override
 	public boolean select(Object DTO) {
+		// TODO Auto-generated method stub
 		return false;
+	}
 
+	@Override
+	public boolean update(Object DTO) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(String s) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 	@Override
 	public Object select(String s) {
-
-		return false;
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
 	public Object getDBList(String tName) {
+		return null;
+	}
+
+	@Override
+	public Object getDBList(String tName, String s) {
 		ArrayList<PostDTO> pList = new ArrayList<>();
 		// TODO Auto-generated method stub
 		try { // 시간
@@ -69,15 +86,15 @@ public class PostDAO implements DAOInterface {
 			String sql = "select * from post where id=(select yourid from friend where myid=?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
 
-			psmt.setString(1, tName);
+			psmt.setString(1, s);
 
 			rs = psmt.executeQuery();
 
 			while (rs.next()) {
 
 				PostDTO p = new PostDTO();
-
-				p.setNo(rs.getFloat("no"));
+				rs.getFloat("no");
+				//p.setNo(rs.getFloat("no"));
 				p.setDay(rs.getString("day"));
 				p.setId(rs.getString("id"));
 				p.setText(rs.getString("text"));
@@ -96,7 +113,5 @@ public class PostDAO implements DAOInterface {
 		}
 		return pList;
 	}
-
-	
 
 }

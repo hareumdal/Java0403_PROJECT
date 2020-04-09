@@ -1,7 +1,6 @@
-package client;
+package frame;
 
 import java.awt.BorderLayout;
-import java.awt.Frame;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -11,10 +10,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextPane;
 import javax.swing.border.EmptyBorder;
 
+import client.ClientChat;
+
 public class WritePostFrame extends JFrame {
 	
 	private ClientChat nowCc = null;
-
 	WritePostFrame(ClientChat cc) {
 		super("WritePost");
 		nowCc = cc;
@@ -55,7 +55,7 @@ public class WritePostFrame extends JFrame {
 		JButton btnShare = new JButton("share");
 		btnShare.addActionListener(new ActionListener() { // 디비에 저장하기
 			public void actionPerformed(ActionEvent e) { // 내 창에서도 뜨고, 친구들 한테도 뜨도록 추가하기!
-				nowCc.send("sharePost:" + nowCc.getNowId() + "/" + textPane.getText());
+				nowCc.send("sharePost:" + nowCc.getNowCcId() + "/" + textPane.getText());
 				setClose();
 			}
 		});
@@ -72,5 +72,4 @@ public class WritePostFrame extends JFrame {
 	public void setClose() {
 		this.setVisible(false);
 	}
-
 }

@@ -11,16 +11,16 @@ public class FriendDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-
+	
 	private static FriendDAO FriendDAO = null;
-
-	private FriendDAO() {
-
+	
+	private FriendDAO(){
+		
 	}
-
+	
 	public static FriendDAO getInstance(Connection c) {
 		con = c;
-		if (FriendDAO == null) {
+		if(FriendDAO==null) {
 			FriendDAO = new FriendDAO();
 		}
 		return FriendDAO;
@@ -28,58 +28,54 @@ public class FriendDAO implements DAOInterface {
 
 	@Override
 	public boolean insert(Object DTO) {
+		// TODO Auto-generated method stub
 		try {
-			FriendDTO f = (FriendDTO) DTO;
+			FriendDTO f = (FriendDTO)DTO;
 			String sql = "insert into friend values(?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
 			psmt.setString(1, f.getMyId());
-			psmt.setString(2, f.getYourId());
-
+			psmt.setString(2, f.getyourId());
+			
 			int a = psmt.executeUpdate();
-
-			if (a > 0) {
+			
+			if(a>0) {
 				return true;
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
 		return false;
 	}
 
 	@Override
 	public boolean select(Object DTO) {
 		// TODO Auto-generated method stub
-		try {
-			FriendDTO f = null;
-			String sql = "select * from friend";
-			stmt = con.createStatement();
-			rs = stmt.executeQuery(sql);
-			
-			while(rs.next()) {
-				f = new FriendDTO();
-				f.setMyId(rs.getString("myid"));
-				f.setYourId(rs.getString("yourid"));
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
 		return false;
+	}
+	
+	@Override
+	public Object getDBList(String tName) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 	@Override
-	public ArrayList<FriendDTO> getDBList(String tName) {
-		// TODO Auto-generated method stub
-		ArrayList<FriendDTO> frList = new ArrayList<>();
+	public ArrayList<Object> getDBList(String tName, String s) {
+		ArrayList<Object> fList = new ArrayList<>();
 		try {
-			String sql = "select * from friend";
+			String sql = "select * from friend where myId = ?";
 			stmt = con.prepareStatement(sql);
-			if (stmt != null) {
+			if (stmt!=null) {
 				rs = stmt.executeQuery(sql);
-				while (rs.next()) {
+				while(rs.next()) {
+					MemberDTO m = new MemberDTO();
 					
+					m.setId(rs.getString("id"));
+					m.setPwd(rs.getString("pwd"));
+					m.setPhone(rs.getString("phone"));
+					
+					fList.add(m);
 				}
 			}
 		} catch (SQLException e) {
@@ -87,33 +83,26 @@ public class FriendDAO implements DAOInterface {
 			// e.printStackTrace();
 			System.out.println("DB not connect");
 		}
-		return frList;
+		return fList;
 	}
 
 	@Override
 	public Object select(String s) {
-		FriendDTO f = null;
-		ArrayList<FriendDTO> frList = new ArrayList<>();
-		String sql = "select yourid from friend where myid=?";
-		PreparedStatement psmt;
-		try {
-			psmt = con.prepareStatement(sql);
-			psmt.setString(1, s);
-			rs = psmt.executeQuery();
-			
-			while(rs.next()) {
-				f = new FriendDTO();
-				f.setMyId(rs.getString("myid"));
-				f.setYourId(rs.getString("yourid"));
-				frList.add(f);
-			}
-			return frList;
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
+		// TODO Auto-generated method stub
+		return false;
 	}
 
+	@Override
+	public boolean update(Object DTO) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(String s) {
+		// TODO Auto-generated method stub
+		
+		return false;
+	}
 
 }

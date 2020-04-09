@@ -4,18 +4,18 @@ import java.io.Serializable;
 import java.sql.Blob;
 
 public class PostDTO implements Serializable{
-	private float no;
+	private String no = null;
 	private String day = null;
 	private String id = null;
 	private String text = null;
-//	private Blob image = null;
+	private Blob image = null;
 	
-	public float getNo() {
+	public String getNo() {
 		return no;
 	}
 	
-	public void setNo(float f) {
-		this.no = f;
+	public void setNo(String no) {
+		this.no = no;
 	}
 	
 	public String getDay() {
@@ -42,12 +42,12 @@ public class PostDTO implements Serializable{
 		this.text = text;
 	}
 	
-//	public Blob getImage() {
-//		return image;
-//	}
-//	
-//	public void setImage(Blob image) {
-//		this.image = image;
-//	}
+	public Blob getImage() {
+		return image;
+	}
+	
+	public void setImage(Blob image) {
+		this.image = image;
+	}
 
 }

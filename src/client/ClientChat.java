@@ -6,12 +6,11 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.util.ArrayList;
 
-import db.FavoriteDTO;
-import db.FriendDTO;
-import db.MemberDTO;
-import db.PostDTO;
+import frame.ChkFrame;
+import frame.HomeFrame;
+import frame.JoinFrame;
+import frame.LoginFrame;
 
 public class ClientChat {
 	private Socket withServer = null;
@@ -19,7 +18,6 @@ public class ClientChat {
 	private OutputStream seMsg = null;
 
 	private LoginFrame loginF = null;
-	private ChkFrame chkF = null;
 	private HomeFrame homeF = null;
 
 	private String nowId = null;
@@ -28,11 +26,6 @@ public class ClientChat {
 	ClientChat(Socket s) {
 		this.withServer = s;
 		login(this);
-		// 로그인을 했는데 누군가가 다시 창을 켜면 또 로그인이 됨== a가 두 명..
-	}
-
-	public String getNowId() {
-		return nowId;
 	}
 
 	public void receive() {
@@ -50,9 +43,10 @@ public class ClientChat {
 						String reMsg = new String(buffer);
 						reMsg = reMsg.trim();
 						System.out.println(reMsg);
-
 					}
 				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					// e.printStackTrace();
 					System.out.println("Server Out");
 				}
 			}
@@ -70,21 +64,38 @@ public class ClientChat {
 	}
 
 	private void login(ClientChat cc) {
+		// TODO Auto-generated method stub
 		loginF = new LoginFrame(cc);
 	}
 
-	public void Home(String chk, ClientChat cc) {
-		if (chk.indexOf("login true") != -1) {
+	public String getNowCcId() {
+		return nowId;
+	}
 
+	public void Home(String chk, ClientChat cc) {
+		// TODO Auto-generated method stub
+		if (chk.indexOf("Login true") != -1) {
+			loginF.dispose();
 			homeF = HomeFrame.getInstance(nowId, cc);
-			receiveObject();
-			homeF.Frame();
+			// TableName 꼭 바꾸기 > 글 목록 받아와야 함
+			Object pList = getDBObject("setList:" + "member" + "/" + nowId);
+			homeF.Frame(pList);
 		} else {
 			nowId = null;
 		}
 	}
 
+	public String getNowScId() {
+		return nowId;
+	}
+
+	public Object getDBObject(String msg) {
+		send(msg);
+		return receiveObject();
+	}
+
 	public Object receiveObject() {
+		// TODO Auto-generated method stub
 		try {
 			reMsg = withServer.getInputStream();
 			byte[] reBuffer = new byte[1024];
@@ -92,12 +103,12 @@ public class ClientChat {
 
 			ByteArrayInputStream bis = new ByteArrayInputStream(reBuffer);
 			ObjectInputStream ois = new ObjectInputStream(bis);
+
 			Object o = ois.readObject();
-			// frame 에 쓸 거 //Object object = nowCc.getObject("sharePost..ect:"+nowCc.getNowId());
-			// send(msg)+receiveObject(): return Object: type is <required type>
 
 			return o;
 		} catch (Exception e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return null;
@@ -118,9 +129,15 @@ public class ClientChat {
 			chk = new String(buffer);
 			chk = chk.trim();
 
-			System.out.println(chk);
+			System.out.println("CheckMessage : " + chk);
+
+			if (chk.contains("MyPage Delete true")) {
+				System.exit(0);
+			}
+
 			ChkFrame chkF = new ChkFrame(chk, this);
 		} catch (IOException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -138,11 +155,6 @@ public class ClientChat {
 		System.out.println("pwd:" + pwd);
 
 		chkSet(user);
-	}
-
-	public Object getObject(String Msg) {
-		send(Msg);
-		return receiveObject();
 	}
 
 }
