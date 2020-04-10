@@ -11,16 +11,16 @@ public class PostDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-	
+
 	private static PostDAO PostDAO = null;
-	
-	private PostDAO(){
-		
+
+	private PostDAO() {
+
 	}
-	
+
 	public static PostDAO getInstance(Connection c) {
 		con = c;
-		if(PostDAO==null) {
+		if (PostDAO == null) {
 			PostDAO = new PostDAO();
 		}
 		return PostDAO;
@@ -30,12 +30,11 @@ public class PostDAO implements DAOInterface {
 	public boolean insert(Object DTO) {
 		try {
 			PostDTO p = (PostDTO) DTO;
-			String sql = "insert into post values(no.nextval, ?, ?, ?)";
+			String sql = "insert into post values(no.nextval, to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), ?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
 
-			psmt.setString(1, p.getDay());
-			psmt.setString(2, p.getId());
-			psmt.setString(3, p.getText());
+			psmt.setString(1, p.getId());
+			psmt.setString(2, p.getText());
 
 			int a = psmt.executeUpdate();
 
@@ -78,40 +77,42 @@ public class PostDAO implements DAOInterface {
 	}
 
 	@Override
-	public Object getDBList(String tName, String s) {
+	public Object getDBList(String tName, String s) { // 친구가 두 명이면 실행 안 됨
 		ArrayList<PostDTO> pList = new ArrayList<>();
 		// TODO Auto-generated method stub
 		try { // 시간
-			System.out.println("PostDAOClass::::"+tName);
-			String sql = "select * from post where id=(select yourid from friend where myid=?)";
+			System.out.println("PostDAOClass::::" + tName);
+			String sql = "select * from post where id in (select yourid from friend where myid=?) or id=?";
 			PreparedStatement psmt = con.prepareStatement(sql);
 
 			psmt.setString(1, s);
-
+			psmt.setString(2, s);
 			rs = psmt.executeQuery();
 
-			while (rs.next()) {
+			if (rs != null) {
+				while (rs.next()) {
 
-				PostDTO p = new PostDTO();
-				rs.getFloat("no");
-				//p.setNo(rs.getFloat("no"));
-				p.setDay(rs.getString("day"));
-				p.setId(rs.getString("id"));
-				p.setText(rs.getString("text"));
-				System.out.println();
-			
-				System.out.println("getPostDAO:::" + p.getText());
-				pList.add(p);
+					PostDTO p = new PostDTO();
+					rs.getFloat("no");
+					// p.setNo(rs.getFloat("no"));
+					p.setDay(String.valueOf(rs.getDate("day")));
+					p.setId(rs.getString("id"));
+					p.setText(rs.getString("text"));
+					System.out.println();
+
+					System.out.println("getPostDAO:::" + p.getText());
+					pList.add(p);
+				}
+
+				return pList;
 			}
-			
-			return pList;
 
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
-			 e.printStackTrace();
+			e.printStackTrace();
 			System.out.println("DB not connect");
 		}
-		return pList;
+		return null;
 	}
 
 }

@@ -48,7 +48,7 @@ public class ServerCenter {
 		nowSc = sc;
 		this.msg = msg;
 
-		if (msg.indexOf("login:") != -1) {
+		if (msg.indexOf("login:") != -1) { // login/
 			login(msg);
 		} else if (msg.indexOf("join:") != -1) {
 			join(msg);
@@ -59,14 +59,13 @@ public class ServerCenter {
 		} else if (msg.indexOf("profile:") != -1) {
 			viewProfile(msg);
 		} else if (msg.indexOf("myPage:") != -1) {
-			// myPage(msg);
+			 myPage(msg);
 			// viewMyPage(msg);
-			if (nowSc.getNowScId().equals(msg.substring(msg.lastIndexOf(":") + 1, msg.length()))) {
-				sendObject(Dc.select("member", nowSc.getNowScId()));
-			}
+			//if (nowSc.getNowScId().equals(msg.substring(msg.lastIndexOf(":") + 1, msg.length()))) {
+			//	sendObject(Dc.select("member", nowSc.getNowScId()));
+			//}
 		} else if (msg.indexOf("follow:") != -1) {
 			followFriend(msg);
-
 		} else if (msg.indexOf("sharePost:") != -1) {
 			sharePost(msg);
 		} else if (msg.indexOf("addFriend:") != -1) { // 친구 목록은 setList:로 얻쟈!!
@@ -80,11 +79,9 @@ public class ServerCenter {
 		String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
 		String id = reMsg.substring(0, reMsg.indexOf("/"));
 		String post = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
-		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		String day = format1.format(System.currentTimeMillis());
 
 		PostDTO pDTO = new PostDTO();
-		pDTO.setDay(day);
+		
 		pDTO.setId(id);
 		pDTO.setText(post);
 

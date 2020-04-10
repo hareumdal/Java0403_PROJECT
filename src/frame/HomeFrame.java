@@ -92,15 +92,15 @@ public class HomeFrame extends JFrame {
 		tab_1.setBorder(new EmptyBorder(5, 5, 5, 5));
 
 		JPanel contentPane = new JPanel();
-		contentPane.setLayout(null);
-		contentPane.setBounds(200, 100, 500, 500);
+		contentPane.setLayout(new BorderLayout());
+		contentPane.setBounds(0, 0, 500, 500);
 
 		JScrollPane scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(null);
-		scrollPane.setBounds(0, 0, 450, 500);
-		scrollPane.setPreferredSize(new Dimension(450, 1000));
-		contentPane.add(scrollPane);
+		scrollPane.setBounds(0, 0, 400, 500);
+		scrollPane.setPreferredSize(new Dimension(400, 500));
+		//contentPane.add(scrollPane);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -111,14 +111,27 @@ public class HomeFrame extends JFrame {
 
 		// 포스팅을 요청하자
 		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("postList:post" + "/" + nowId);
-		System.out.println("homeF's PostDTO::" + al.size());
-		for (int i = 0; i < al.size(); i++) {
-			PostDTO m = (PostDTO) al.get(i);
-			panel.add(post.createPost(m));
+		if (al != null) {
+			for (int i = 0; i < al.size(); i++) {
+				PostDTO m = (PostDTO) al.get(i);
+				panel.add(post.createPost(m));
+			}
+		} else {
+			// 불러올 목록 없음 띄워주기
 		}
 
-		tab_1.add(scrollPane);
+		JButton refresh = new JButton("refresh");
+		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
+			public void actionPerformed(ActionEvent e) {
+				nowCc.getDBObject("postList:" + "/" + nowId);
+				
+			}
+		});
 
+		contentPane.add(refresh, "North");
+		contentPane.add(scrollPane, "Center");
+
+		tab_1.add(contentPane);
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
