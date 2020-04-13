@@ -5,18 +5,18 @@ import java.sql.Blob;
 import java.sql.Date;
 
 public class PostDTO implements Serializable{
-	private String no = null;
+	private int no = 0;
 	private String day = null;
 	private String id = null;
 	private String text = null;
 //	private Blob image = null;
 	
-	public String getNo() {
+	public int getNo() {
 		return no;
 	}
 	
-	public void setNo(String no) {
-		this.no = no;
+	public void setNo(int i) {
+		this.no = i;
 	}
 	
 	public String getDay() {

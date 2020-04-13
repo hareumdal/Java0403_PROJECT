@@ -61,7 +61,7 @@ public class FriendDAO implements DAOInterface {
 	}
 
 	@Override
-	public ArrayList<Object> getDBList(String tName, String s) {
+	public Object getDBList(String tName, String s) {
 		ArrayList<Object> fList = new ArrayList<>();
 		try {
 			String sql = "select * from friend where myId = ?";
@@ -103,6 +103,13 @@ public class FriendDAO implements DAOInterface {
 		// TODO Auto-generated method stub
 		
 		return false;
+	}
+
+
+	@Override
+	public Object getDBListES(String tName, Object object) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

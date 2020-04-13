@@ -51,6 +51,7 @@ public class HomeFrame extends JFrame {
 
 	private static ClientChat nowCc = null;
 	private static String nowId = null;
+	int postNum = -1;
 
 	private static HomeFrame HomeF = null;
 
@@ -100,7 +101,7 @@ public class HomeFrame extends JFrame {
 		scrollPane.setBorder(null);
 		scrollPane.setBounds(0, 0, 400, 500);
 		scrollPane.setPreferredSize(new Dimension(400, 500));
-		//contentPane.add(scrollPane);
+		// contentPane.add(scrollPane);
 
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
@@ -109,12 +110,13 @@ public class HomeFrame extends JFrame {
 
 		onePost post = new onePost();
 
-		// 포스팅을 요청하자
-		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("postList:post" + "/" + nowId);
+		// 포스팅을 요청하자 // 아래 위가 바껴서 나옴
+		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
 		if (al != null) {
 			for (int i = 0; i < al.size(); i++) {
 				PostDTO m = (PostDTO) al.get(i);
 				panel.add(post.createPost(m));
+				postNum = Integer.valueOf(m.getNo());
 			}
 		} else {
 			// 불러올 목록 없음 띄워주기
@@ -123,8 +125,21 @@ public class HomeFrame extends JFrame {
 		JButton refresh = new JButton("refresh");
 		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
 			public void actionPerformed(ActionEvent e) {
-				nowCc.getDBObject("postList:" + "/" + nowId);
-				
+				ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("postList:post/" + nowId + "/" + postNum);
+				if (al != null) {
+					for (int i = 0; i < al.size(); i++) {
+						PostDTO m = (PostDTO) al.get(i);
+						System.out.println(m.getNo()); // 왜 0이지..?
+						if (m.getNo() != postNum) {
+							System.out.println("hoemFrame" + m.getNo() + m.getId() + m.getText());
+							panel.add(post.createPost(m));
+							postNum = Integer.valueOf(m.getNo());
+						} else {
+						}
+					}
+				} else {
+					// 불러올 목록 없음 띄워주기
+				}
 			}
 		});
 

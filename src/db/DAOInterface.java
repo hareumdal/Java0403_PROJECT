@@ -17,6 +17,10 @@ public interface DAOInterface {
 	Object getDBList(String tName);
 	
 	// table에서 조건에 맞는 일부 tuple 갖고오기
+//	Object getDBList(String tName, Object object);
+
 	Object getDBList(String tName, String s);
+
+	Object getDBListES(String tName, Object object);
 
 }
