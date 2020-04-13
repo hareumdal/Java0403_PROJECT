@@ -64,12 +64,6 @@ public class FavoriteDAO implements DAOInterface {
 
 
 	@Override
-	public Object getDBListES(String tName, Object object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Object getDBList(String tName, String s) {
 		// TODO Auto-generated method stub
 		return null;

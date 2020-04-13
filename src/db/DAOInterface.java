@@ -21,6 +21,4 @@ public interface DAOInterface {
 
 	Object getDBList(String tName, String s);
 
-	Object getDBListES(String tName, Object object);
-
 }

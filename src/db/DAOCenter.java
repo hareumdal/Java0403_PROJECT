@@ -86,10 +86,6 @@ public class DAOCenter {
 		return Dif.getDBList(tName, s);
 	}
 
-	public Object getDBES(String tName, Object object) {
-		tableChk(tName);
-		return Dif.getDBListES(tName, object);
-	}
 
 	private void tableChk(String tName) {
 		switch (tName) {

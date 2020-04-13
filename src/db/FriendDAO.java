@@ -105,11 +105,4 @@ public class FriendDAO implements DAOInterface {
 		return false;
 	}
 
-
-	@Override
-	public Object getDBListES(String tName, Object object) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

@@ -70,16 +70,8 @@ public class ServerCenter {
 			sharePost(msg);
 		} else if (msg.indexOf("addFriend:") != -1) { // 친구 목록은 setList:로 얻쟈!!
 			//addFriend();
-		} else if (msg.indexOf("postList:") != -1) { // 원하는 리스트를 받아오기
-			ArrayList<String> info = new ArrayList<>();
-			String tName = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
-			String id = msg.substring(msg.indexOf("/") + 1, msg.lastIndexOf("/"));
-			String postNum = msg.substring(msg.lastIndexOf("/") + 1, msg.length());
-			System.out.println(tName+":"+id+":"+postNum);
-			info.add(id);
-			info.add(postNum);			
-			sendObject(Dc.getDBES(tName, info));
-		}
+		} 
+		
 
 	}
 	private void sharePost(String msg) { // 작성자와 팔로워들에게 보내주기

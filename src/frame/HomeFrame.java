@@ -46,7 +46,10 @@ public class HomeFrame extends JFrame {
 	private JPanel tab_4 = new JPanel();
 
 	private JPanel searchP = new JPanel();
-
+	private onePost post = null;
+	private JPanel panel = null;
+	private JScrollPane scrollPane = null;
+	
 	private JButton searchM = new JButton();
 
 	private static ClientChat nowCc = null;
@@ -96,21 +99,35 @@ public class HomeFrame extends JFrame {
 		contentPane.setLayout(new BorderLayout());
 		contentPane.setBounds(0, 0, 500, 500);
 
-		JScrollPane scrollPane = new JScrollPane();
+		scrollPane = new JScrollPane();
 		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		scrollPane.setBorder(null);
 		scrollPane.setBounds(0, 0, 400, 500);
 		scrollPane.setPreferredSize(new Dimension(400, 500));
-		// contentPane.add(scrollPane);
-
-		JPanel panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-
-		scrollPane.setViewportView(panel);
-
-		onePost post = new onePost();
 
 		// 포스팅을 요청하자 // 아래 위가 바껴서 나옴
+		
+		bringPost();
+		
+
+		JButton refresh = new JButton("refresh");
+		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
+			public void actionPerformed(ActionEvent e) {
+				
+				bringPost();
+			}
+		});
+		contentPane.add(refresh, "North");
+		contentPane.add(scrollPane, "Center");
+		
+		scrollPane.setViewportView(panel);
+		tab_1.add(contentPane);
+	}
+
+	private void bringPost() {
+		panel = new JPanel();
+		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+		post = new onePost();
 		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
 		if (al != null) {
 			for (int i = 0; i < al.size(); i++) {
@@ -121,32 +138,6 @@ public class HomeFrame extends JFrame {
 		} else {
 			// 불러올 목록 없음 띄워주기
 		}
-
-		JButton refresh = new JButton("refresh");
-		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
-			public void actionPerformed(ActionEvent e) {
-				ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("postList:post/" + nowId + "/" + postNum);
-				if (al != null) {
-					for (int i = 0; i < al.size(); i++) {
-						PostDTO m = (PostDTO) al.get(i);
-						System.out.println(m.getNo()); // 왜 0이지..?
-						if (m.getNo() != postNum) {
-							System.out.println("hoemFrame" + m.getNo() + m.getId() + m.getText());
-							panel.add(post.createPost(m));
-							postNum = Integer.valueOf(m.getNo());
-						} else {
-						}
-					}
-				} else {
-					// 불러올 목록 없음 띄워주기
-				}
-			}
-		});
-
-		contentPane.add(refresh, "North");
-		contentPane.add(scrollPane, "Center");
-
-		tab_1.add(contentPane);
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {

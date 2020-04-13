@@ -113,43 +113,5 @@ public class PostDAO implements DAOInterface {
 		return null;
 	}
 
-	@Override
-	public Object getDBListES(String tName, Object object) {
-		ArrayList<PostDTO> pList = new ArrayList<>();
-
-		ArrayList<String> obList = (ArrayList<String>) object;
-		try { // 시간
-			String sql = "select * from (select * from post where id in (select yourid from friend where myid=?) or id=?) where no between (select no from (select * from post where id in (select yourid from friend where myid=?) or id=?) where no=?) and (select no from (select * from post where id in (select yourid from friend where myid=?) or id=? order by no desc) where rownum=1)";
-			PreparedStatement psmt = con.prepareStatement(sql);
-
-			psmt.setString(1, obList.get(0));
-			psmt.setString(2, obList.get(0));
-			psmt.setString(3, obList.get(0));
-			psmt.setString(4, obList.get(0));
-			psmt.setString(5, obList.get(1));
-			psmt.setString(6, obList.get(0));
-			psmt.setString(7, obList.get(0));
-			rs = psmt.executeQuery();
-
-			if (rs != null) {
-				while (rs.next()) {
-					PostDTO p = new PostDTO();
-					p.setNo(rs.getInt("no"));
-					p.setDay(String.valueOf(rs.getDate("day")));
-					p.setId(rs.getString("id"));
-					p.setText(rs.getString("text"));
-
-					pList.add(p);
-				}
-				return pList;
-			}
-
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-			System.out.println("DB not connect");
-		}
-		return null;
-	}
-
+	
 }
