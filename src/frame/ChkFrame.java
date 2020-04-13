@@ -89,7 +89,6 @@ public class ChkFrame extends JFrame {
 			sP.add(cancleBtn);
 			
 			OkBtn.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated stub
@@ -99,7 +98,6 @@ public class ChkFrame extends JFrame {
 			});
 			
 			cancleBtn.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
@@ -108,7 +106,6 @@ public class ChkFrame extends JFrame {
 			});
 		} else {
 			OkBtn.addActionListener(new ActionListener() {
-				
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub

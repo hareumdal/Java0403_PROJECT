@@ -107,7 +107,6 @@ public class MemberDAO implements DAOInterface {
 
 			psmt.setString(1, s);
 			rs = psmt.executeQuery();
-
 			while (rs.next()) {
 				MemberDTO m = new MemberDTO();
 

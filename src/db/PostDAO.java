@@ -77,7 +77,7 @@ public class PostDAO implements DAOInterface {
 	}
 
 	@Override
-	public Object getDBList(String tName, String s) { // 친구가 두 명이면 실행 안 됨
+	public Object getDBList(String tName, String s) { 
 		ArrayList<PostDTO> pList = new ArrayList<>();
 		// TODO Auto-generated method stub
 		try { // 시간
@@ -92,12 +92,10 @@ public class PostDAO implements DAOInterface {
 				while (rs.next()) {
 
 					PostDTO p = new PostDTO();
-					// rs.getFloat("no");
 					p.setNo(rs.getInt("no"));
 					p.setDay(String.valueOf(rs.getDate("day")));
 					p.setId(rs.getString("id"));
 					p.setText(rs.getString("text"));
-					System.out.println();
 
 					pList.add(p);
 				}

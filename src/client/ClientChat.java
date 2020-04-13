@@ -91,6 +91,7 @@ public class ClientChat {
 
 	public Object getDBObject(String msg) {
 		send(msg);
+		System.out.println(msg);
 		return receiveObject();
 	}
 

@@ -60,10 +60,6 @@ public class ServerCenter {
 			viewProfile(msg);
 		} else if (msg.indexOf("myPage:") != -1) {
 			 myPage(msg);
-			// viewMyPage(msg);
-			//if (nowSc.getNowScId().equals(msg.substring(msg.lastIndexOf(":") + 1, msg.length()))) {
-			//	sendObject(Dc.select("member", nowSc.getNowScId()));
-			//}
 		} else if (msg.indexOf("follow:") != -1) {
 			followFriend(msg);
 		} else if (msg.indexOf("sharePost:") != -1) {

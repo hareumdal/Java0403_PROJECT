@@ -48,8 +48,9 @@ public class HomeFrame extends JFrame {
 	private JPanel searchP = new JPanel();
 	private onePost post = null;
 	private JPanel panel = null;
-	private JScrollPane scrollPane = null;
-	
+	private JScrollPane TMscrollPane = null;
+	private JScrollPane MPscrollPane = null;
+	private JPanel myPost = null;
 	private JButton searchM = new JButton();
 
 	private static ClientChat nowCc = null;
@@ -99,35 +100,32 @@ public class HomeFrame extends JFrame {
 		contentPane.setLayout(new BorderLayout());
 		contentPane.setBounds(0, 0, 500, 500);
 
-		scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBorder(null);
-		scrollPane.setBounds(0, 0, 400, 500);
-		scrollPane.setPreferredSize(new Dimension(400, 500));
+		TMscrollPane = new JScrollPane();
+		TMscrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		TMscrollPane.setBorder(null);
+		TMscrollPane.setBounds(0, 0, 400, 500);
+		TMscrollPane.setPreferredSize(new Dimension(400, 500));
 
 		// 포스팅을 요청하자 // 아래 위가 바껴서 나옴
-		
+		post = new onePost();
 		bringPost();
-		
+		tab_1.add(contentPane);
 
 		JButton refresh = new JButton("refresh");
 		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
 			public void actionPerformed(ActionEvent e) {
-				
 				bringPost();
 			}
 		});
 		contentPane.add(refresh, "North");
-		contentPane.add(scrollPane, "Center");
-		
-		scrollPane.setViewportView(panel);
-		tab_1.add(contentPane);
+		contentPane.add(TMscrollPane, "Center");
+
 	}
 
 	private void bringPost() {
 		panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
-		post = new onePost();
+
 		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
 		if (al != null) {
 			for (int i = 0; i < al.size(); i++) {
@@ -138,6 +136,7 @@ public class HomeFrame extends JFrame {
 		} else {
 			// 불러올 목록 없음 띄워주기
 		}
+		TMscrollPane.setViewportView(panel);
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
@@ -182,22 +181,15 @@ public class HomeFrame extends JFrame {
 		myPostAll.setLayout(null);
 		myPostAll.setBounds(0, 120, 480, 285);
 
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		scrollPane.setBounds(0, 120, 480, 285);
-		scrollPane.setPreferredSize(new Dimension(450, 1000));
-		myPostAll.add(scrollPane);
+		MPscrollPane = new JScrollPane();
+		MPscrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		MPscrollPane.setBounds(0, 120, 480, 285);
+		MPscrollPane.setPreferredSize(new Dimension(450, 1000));
+		myPostAll.add(MPscrollPane);
 
-		JPanel myPost = new JPanel();
-		myPost.setLayout(new BoxLayout(myPost, BoxLayout.Y_AXIS));
+		bringMyPost();
 
-		scrollPane.setViewportView(myPost);
-
-		for (int i = 0; i < 10; i++) {
-			myPost.add(viewMyPost());
-		}
-
-		tab_2.add(scrollPane);
+		tab_2.add(MPscrollPane);
 
 		if (this.nowId.equals(id)) {
 			JButton MyPageBtn = new JButton("MyPage");
@@ -205,7 +197,6 @@ public class HomeFrame extends JFrame {
 			tab_2.add(MyPageBtn);
 
 			MyPageBtn.addActionListener(new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
@@ -218,10 +209,8 @@ public class HomeFrame extends JFrame {
 			tab_2.add(PostWriteBtn);
 
 			PostWriteBtn.addActionListener(new ActionListener() {
-
 				@Override
 				public void actionPerformed(ActionEvent e) {
-					// TODO Auto-generated method stub
 					WritePostFrame writePostFrame = new WritePostFrame(nowCc);
 				}
 			});
@@ -271,21 +260,35 @@ public class HomeFrame extends JFrame {
 		tab_2.add(RefreshBtn);
 
 		RefreshBtn.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-
+				bringMyPost();
 			}
 		});
 
 	}
 
-	private Panel viewMyPost() {
+	private void bringMyPost() {
+		myPost = new JPanel();
+		myPost.setLayout(new BoxLayout(myPost, BoxLayout.Y_AXIS));
+		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
+		if (al != null) {
+			for (int i = 0; i < al.size(); i++) {
+				PostDTO m = (PostDTO) al.get(i);
+				myPost.add(viewMyPost(m));
+			}
+		} else {
+			// 불러올 목록 없음 띄워주기
+		}
+		MPscrollPane.setViewportView(myPost);
+	}
+
+	private Panel viewMyPost(PostDTO postDTO) { // 새로운 클래스를 만들어서 사용하자!
 		Panel Mp = new Panel();
 		Mp.setBounds(10, 120, 465, 240);
 
 		JTextPane myPostContent = new JTextPane();
+		myPostContent.setText(postDTO.getText());
 
 		JButton myPostfavoriteBtn = new JButton("Favorite");
 
@@ -295,9 +298,7 @@ public class HomeFrame extends JFrame {
 		});
 
 		JButton myPostModifyBtn = new JButton("Modify");
-
 		myPostModifyBtn.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent e) {
 			}
 		});
@@ -352,7 +353,6 @@ public class HomeFrame extends JFrame {
 		tab_4.add(searchR, "Center");
 
 		searchM.addActionListener(new ActionListener() {
-
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
