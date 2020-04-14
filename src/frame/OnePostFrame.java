@@ -18,6 +18,7 @@ import db.PostDTO;
 public class OnePostFrame {
 	private ClientChat nowCc = null;
 	private String nowId = null;
+	//private JLabel postFavoriteNum = null;
 
 	OnePostFrame(ClientChat cc, String id) {
 		nowCc = cc;
@@ -25,6 +26,7 @@ public class OnePostFrame {
 	}
 
 	public Panel viewPost(PostDTO p, ArrayList<Object> fvList) {
+
 		Panel viewPost = new Panel();
 		viewPost.setBounds(10, 120, 465, 240);
 
@@ -52,24 +54,10 @@ public class OnePostFrame {
 			postfavoriteBtn.setText("favorite");
 		}
 
-		postfavoriteBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				// 관심글(좋아요) 등록
-				if (postfavoriteBtn.getText().equals("favorite")) { // 맨처음 좋아요를 누르지 않은 상태였다면
-					nowCc.send("addfavorite:" + nowId + "/" + p.getNo());
-					postfavoriteBtn.setText("unfavorite");
-
-				} else if (postfavoriteBtn.getText().equals("unfavorite")) {
-					nowCc.send("delfavorite:" + nowId + "/" + p.getNo());
-					postfavoriteBtn.setText("favorite");
-				}
-			}
-		});
+		
 
 		JButton postModifyBtn = new JButton("Modify");
-
 		postModifyBtn.addActionListener(new ActionListener() {
-
 			public void actionPerformed(ActionEvent e) {
 
 			}
@@ -82,14 +70,33 @@ public class OnePostFrame {
 		JLabel writeTime = new JLabel(p.getDay());
 
 		// getList - 조건 : 글 작성자=대상 Id
-		JLabel postFavoriteNum = new JLabel("Favorite num");
 
+		JLabel postFavoriteNum = new JLabel();
+		favoriteNum(p, postFavoriteNum);
+
+	
+		postfavoriteBtn.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				// 관심글(좋아요) 등록
+				if (postfavoriteBtn.getText().equals("favorite")) { // 맨처음 좋아요를 누르지 않은 상태였다면
+					nowCc.send("addfavorite:" + nowId + "/" + p.getNo());
+					postfavoriteBtn.setText("unfavorite");
+					favoriteNum(p, postFavoriteNum);
+				} else if (postfavoriteBtn.getText().equals("unfavorite")) {
+					nowCc.send("delfavorite:" + nowId + "/" + p.getNo());
+					postfavoriteBtn.setText("favorite");
+					favoriteNum(p, postFavoriteNum);
+				}
+			}
+		});
+		
+		
 		JButton postDeleteBtn = new JButton("Delete");
 
 		postDeleteBtn.addActionListener(new ActionListener() {
 
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent arg0) { // 좋아요도 같이 사라져야 하지 않을까
 				// TODO Auto-generated method stub
 				nowCc.chkSet("deletePost:" + nowId + "/" + p.getNo());
 			}
@@ -139,6 +146,16 @@ public class OnePostFrame {
 		}
 
 		return viewPost;
+	}
+
+	private void favoriteNum(PostDTO p, JLabel postFavoriteNum) {
+		String fvCount = (String) nowCc.getObject("favorite:" + "favoriteNumber/" + p.getNo());
+		if (fvCount == null) {
+			postFavoriteNum.setText("likes");
+		} else {
+			postFavoriteNum.setText(fvCount + " likes");
+		}
+
 	}
 
 }

@@ -29,7 +29,12 @@ public class ClientChat {
 		login(this);
 	}
 
-	
+	public String getMsg(String msg) {
+		send(msg);
+		receive();
+		return getReceiveMessage();
+	}
+
 	public void receive() {
 		// TODO Auto-generated method stub
 		try {

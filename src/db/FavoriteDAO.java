@@ -66,7 +66,6 @@ public class FavoriteDAO implements DAOInterface {
 			int cnt = psmt.executeUpdate();
 
 			if (cnt == 1) {
-				System.out.println("FaDAO:: Good");
 				return true;
 			}
 		} catch (SQLException e) {
@@ -90,8 +89,22 @@ public class FavoriteDAO implements DAOInterface {
 	}
 
 	@Override
-	public Object select(String s) {
-		// TODO Auto-generated method stub
+	public String select(String s) {
+		String count = null;
+		try {
+			String sql = "select count(*) from favorite where no=? group by no";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
+			rs = psmt.executeQuery();
+			while (rs.next()) {
+				count = rs.getString("count(*)");
+			}
+			return count;
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 		return null;
 	}
 
@@ -102,7 +115,7 @@ public class FavoriteDAO implements DAOInterface {
 	}
 
 	@Override
-	public ArrayList<Object> getDBList(String tName, String s) {
+	public Object getDBList(String tName, String s) {
 		ArrayList<Object> fvList = new ArrayList<>();
 		try {
 			String sql = "select * from favorite where Id=?";
@@ -115,9 +128,11 @@ public class FavoriteDAO implements DAOInterface {
 
 				fv.setNo(rs.getString("no"));
 				fv.setId(rs.getString("Id"));
-				
+
 				fvList.add(fv);
 			}
+			return fvList;
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

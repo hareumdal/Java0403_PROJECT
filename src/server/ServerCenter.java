@@ -65,13 +65,12 @@ public class ServerCenter {
 			followFriend(msg);
 		} else if (msg.indexOf("Post:") != -1) {
 			post(msg);
-		}  else if (msg.indexOf("favorite:") != -1) {
+		} else if (msg.indexOf("favorite:") != -1) {
 			list(msg);
 		}
 	}
 
 	private void list(String msg) {
-		
 		String myId = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
 		String postNo = msg.substring(msg.indexOf("/") + 1, msg.length());
 		FavoriteDTO fv = new FavoriteDTO();
@@ -80,11 +79,14 @@ public class ServerCenter {
 
 		if (msg.contains("addfavorite:")) {
 			if (Dc.insert("favorite", fv)) {
+				Dc.select("favorite", postNo);
 			}
 		} else if (msg.contains("delfavorite:")) {
 			// follow 풀기
 			if (Dc.delete("favorite", fv)) {
 			}
+		} else if (msg.contains("favoriteNumber/")) {
+			sendObject(Dc.select("favorite", postNo));
 		}
 	}
 

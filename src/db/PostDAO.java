@@ -11,16 +11,16 @@ public class PostDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-	
+
 	private static PostDAO PostDAO = null;
-	
-	private PostDAO(){
-		
+
+	private PostDAO() {
+
 	}
-	
+
 	public static PostDAO getInstance(Connection c) {
 		con = c;
-		if(PostDAO==null) {
+		if (PostDAO == null) {
 			PostDAO = new PostDAO();
 		}
 		return PostDAO;
@@ -36,18 +36,18 @@ public class PostDAO implements DAOInterface {
 //			
 //			psmt.setString(1, p.getId());
 //			psmt.setString(2, p.getText());
-			
-			PostDTO p = (PostDTO)DTO;
+
+			PostDTO p = (PostDTO) DTO;
 			String sql = "insert into post values(?, sysdate, ?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
-			
+
 			psmt.setString(1, String.valueOf("15"));
 			psmt.setString(2, p.getId());
 			psmt.setString(3, p.getText());
 
 			int a = psmt.executeUpdate();
 
-			if(a==1) {
+			if (a == 1) {
 				return true;
 			}
 		} catch (SQLException e) {
@@ -77,10 +77,10 @@ public class PostDAO implements DAOInterface {
 			String sql = "delete from post where no=?";
 			PreparedStatement psmt = con.prepareStatement(sql);
 			psmt.setString(1, s);
-			
+
 			int cnt = psmt.executeUpdate();
-			
-			if(cnt==1) {
+
+			if (cnt == 1) {
 				return true;
 			}
 		} catch (SQLException e) {
@@ -109,17 +109,17 @@ public class PostDAO implements DAOInterface {
 		try {
 			String sql = "select * from post order by day desc";
 			stmt = con.prepareStatement(sql);
-			
-			if(stmt!=null) {
+
+			if (stmt != null) {
 				rs = stmt.executeQuery(sql);
-				while(rs.next()) {
+				while (rs.next()) {
 					PostDTO p = new PostDTO();
-					
+
 					p.setNo(rs.getString("no"));
 					p.setDay(rs.getString("day"));
 					p.setId(rs.getString("id"));
 					p.setText(rs.getString("text"));
-					
+
 					pList.add(p);
 				}
 			}
@@ -136,40 +136,40 @@ public class PostDAO implements DAOInterface {
 		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-			if(s.contains("/t")) {
+			if (s.contains("/t")) {
 				String id = s.substring(0, s.indexOf("/"));
 				String sql = "select * from post where id=? or "
 						+ "id=(select yourid from friend where myid=?) order by day desc";
-				
+
 				PreparedStatement psmt = con.prepareStatement(sql);
 				psmt.setString(1, id);
 				psmt.setString(2, id);
 				rs = psmt.executeQuery();
-				
-				while(rs.next()) {
+
+				while (rs.next()) {
 					PostDTO p = new PostDTO();
-					
+
 					p.setNo(rs.getString("no"));
 					p.setDay(rs.getString("day"));
 					p.setId(rs.getString("id"));
 					p.setText(rs.getString("text"));
-					
+
 					pList.add(p);
 				}
-			} else {				
+			} else {
 				String sql = "select * from post where id=?";
 				PreparedStatement psmt = con.prepareStatement(sql);
 				psmt.setString(1, s);
 				rs = psmt.executeQuery();
-				
-				while(rs.next()) {
+
+				while (rs.next()) {
 					PostDTO p = new PostDTO();
-					
+
 					p.setNo(rs.getString("no"));
 					p.setDay(rs.getString("day"));
 					p.setId(rs.getString("id"));
 					p.setText(rs.getString("text"));
-					
+
 					pList.add(p);
 				}
 			}
