@@ -22,35 +22,33 @@ public class ClientChat {
 
 	private String nowId = null;
 	private String chk = null;
+	private String receiveMsg = null;
 
 	ClientChat(Socket s) {
 		this.withServer = s;
 		login(this);
 	}
 
+	
 	public void receive() {
 		// TODO Auto-generated method stub
-		new Thread(new Runnable() {
+		try {
+			reMsg = withServer.getInputStream();
+			byte[] buffer = new byte[256];
+			reMsg.read(buffer);
+			String reMsg = new String(buffer);
+			reMsg = reMsg.trim();
+			System.out.println(reMsg);
+			receiveMsg = reMsg;
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			// e.printStackTrace();
+			System.out.println("Server Out");
+		}
+	}
 
-			@Override
-			public void run() {
-				// TODO Auto-generated method stub
-				try {
-					while (true) {
-						reMsg = withServer.getInputStream();
-						byte[] buffer = new byte[256];
-						reMsg.read(buffer);
-						String reMsg = new String(buffer);
-						reMsg = reMsg.trim();
-						System.out.println(reMsg);
-					}
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
-					System.out.println("Server Out");
-				}
-			}
-		}).start();
+	public String getReceiveMessage() {
+		return receiveMsg;
 	}
 
 	public void send(String msg) {
@@ -77,10 +75,8 @@ public class ClientChat {
 		if (chk.indexOf("Login true") != -1) {
 			loginF.dispose();
 			homeF = HomeFrame.getInstance(nowId, cc);
-			// TableName 꼭 바꾸기 > 글 목록 받아와야 함
-			Object pList = getDBObject("setList:" + "member" + "/" + nowId);
-			homeF.Frame(pList);
-		} else {
+			homeF.Frame();
+		} else if (chk.indexOf("Login false") != -1) {
 			nowId = null;
 		}
 	}
@@ -89,9 +85,8 @@ public class ClientChat {
 		return nowId;
 	}
 
-	public Object getDBObject(String msg) {
+	public Object getObject(String msg) {
 		send(msg);
-		System.out.println(msg);
 		return receiveObject();
 	}
 
@@ -130,7 +125,7 @@ public class ClientChat {
 			chk = new String(buffer);
 			chk = chk.trim();
 
-			System.out.println("CheckMessage : " + chk);
+			System.out.println("/CheckMessage:" + chk);
 
 			if (chk.contains("MyPage Delete true")) {
 				System.exit(0);

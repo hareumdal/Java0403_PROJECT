@@ -1,30 +1,27 @@
 package db;
 
 import java.io.Serializable;
-import java.sql.Blob;
-import java.sql.Date;
 
-public class PostDTO implements Serializable{
-	private int no = 0;
+public class PostDTO implements Serializable {
+	private String no = null;
 	private String day = null;
 	private String id = null;
 	private String text = null;
-//	private Blob image = null;
 	
-	public int getNo() {
+	public String getNo() {
 		return no;
 	}
 	
-	public void setNo(int i) {
-		this.no = i;
+	public void setNo(String no) {
+		this.no = no;
 	}
 	
 	public String getDay() {
 		return day;
 	}
 	
-	public void setDay(String date) {
-		this.day = date;
+	public void setDay(String day) {
+		this.day = day;
 	}
 	
 	public String getId() {
@@ -42,13 +39,5 @@ public class PostDTO implements Serializable{
 	public void setText(String text) {
 		this.text = text;
 	}
-//	
-//	public Blob getImage() {
-//		return image;
-//	}
-//	
-//	public void setImage(Blob image) {
-//		this.image = image;
-//	}
 
 }

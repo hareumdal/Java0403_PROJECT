@@ -11,16 +11,16 @@ public class PostDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
-
+	
 	private static PostDAO PostDAO = null;
-
-	private PostDAO() {
-
+	
+	private PostDAO(){
+		
 	}
-
+	
 	public static PostDAO getInstance(Connection c) {
 		con = c;
-		if (PostDAO == null) {
+		if(PostDAO==null) {
 			PostDAO = new PostDAO();
 		}
 		return PostDAO;
@@ -28,20 +28,63 @@ public class PostDAO implements DAOInterface {
 
 	@Override
 	public boolean insert(Object DTO) {
+		// TODO Auto-generated method stub
 		try {
-			PostDTO p = (PostDTO) DTO;
-			String sql = "insert into post values(no.nextval, to_date(sysdate, 'yyyy-mm-dd hh24:mi:ss'), ?, ?)";
+//			PostDTO p = (PostDTO)DTO;
+//			String sql = "insert into post values(no.nextval, sysdate, ?, ?)";
+//			PreparedStatement psmt = con.prepareStatement(sql);
+//			
+//			psmt.setString(1, p.getId());
+//			psmt.setString(2, p.getText());
+			
+			PostDTO p = (PostDTO)DTO;
+			String sql = "insert into post values(?, sysdate, ?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
-
-			psmt.setString(1, p.getId());
-			psmt.setString(2, p.getText());
+			
+			psmt.setString(1, String.valueOf("15"));
+			psmt.setString(2, p.getId());
+			psmt.setString(3, p.getText());
 
 			int a = psmt.executeUpdate();
 
-			if (a > 0) {
+			if(a==1) {
 				return true;
 			}
 		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("DB error");
+		}
+		return false;
+	}
+
+	@Override
+	public boolean update(Object DTO) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(Object DTO) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean delete(String s) {
+		// TODO Auto-generated method stub
+		try {
+			String sql = "delete from post where no=?";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
+			
+			int cnt = psmt.executeUpdate();
+			
+			if(cnt==1) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return false;
@@ -54,18 +97,6 @@ public class PostDAO implements DAOInterface {
 	}
 
 	@Override
-	public boolean update(Object DTO) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public boolean delete(String s) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public Object select(String s) {
 		// TODO Auto-generated method stub
 		return null;
@@ -73,43 +104,81 @@ public class PostDAO implements DAOInterface {
 
 	@Override
 	public Object getDBList(String tName) {
-		return null;
-	}
-
-	@Override
-	public Object getDBList(String tName, String s) { 
-		ArrayList<PostDTO> pList = new ArrayList<>();
 		// TODO Auto-generated method stub
-		try { // 시간
-			String sql = "select * from post where id in (select yourid from friend where myid=?) or id=?";
-			PreparedStatement psmt = con.prepareStatement(sql);
-
-			psmt.setString(1, s);
-			psmt.setString(2, s);
-			rs = psmt.executeQuery();
-
-			if (rs != null) {
-				while (rs.next()) {
-
+		ArrayList<Object> pList = new ArrayList<>();
+		try {
+			String sql = "select * from post order by day desc";
+			stmt = con.prepareStatement(sql);
+			
+			if(stmt!=null) {
+				rs = stmt.executeQuery(sql);
+				while(rs.next()) {
 					PostDTO p = new PostDTO();
-					p.setNo(rs.getInt("no"));
-					p.setDay(String.valueOf(rs.getDate("day")));
+					
+					p.setNo(rs.getString("no"));
+					p.setDay(rs.getString("day"));
 					p.setId(rs.getString("id"));
 					p.setText(rs.getString("text"));
-
+					
 					pList.add(p);
 				}
-
-				return pList;
 			}
-
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-			System.out.println("DB not connect");
+			System.out.println("DB error");
 		}
-		return null;
+		return pList;
 	}
 
-	
+	@Override
+	public Object getDBList(String tName, String s) {
+		// TODO Auto-generated method stub
+		ArrayList<Object> pList = new ArrayList<>();
+		try {
+			if(s.contains("/t")) {
+				String id = s.substring(0, s.indexOf("/"));
+				String sql = "select * from post where id=? or "
+						+ "id=(select yourid from friend where myid=?) order by day desc";
+				
+				PreparedStatement psmt = con.prepareStatement(sql);
+				psmt.setString(1, id);
+				psmt.setString(2, id);
+				rs = psmt.executeQuery();
+				
+				while(rs.next()) {
+					PostDTO p = new PostDTO();
+					
+					p.setNo(rs.getString("no"));
+					p.setDay(rs.getString("day"));
+					p.setId(rs.getString("id"));
+					p.setText(rs.getString("text"));
+					
+					pList.add(p);
+				}
+			} else {				
+				String sql = "select * from post where id=?";
+				PreparedStatement psmt = con.prepareStatement(sql);
+				psmt.setString(1, s);
+				rs = psmt.executeQuery();
+				
+				while(rs.next()) {
+					PostDTO p = new PostDTO();
+					
+					p.setNo(rs.getString("no"));
+					p.setDay(rs.getString("day"));
+					p.setId(rs.getString("id"));
+					p.setText(rs.getString("text"));
+					
+					pList.add(p);
+				}
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("DB error");
+		}
+		return pList;
+	}
+
 }

@@ -2,12 +2,14 @@ package frame;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
-import java.awt.Panel;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Map;
@@ -15,8 +17,6 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.GroupLayout;
-import javax.swing.GroupLayout.Alignment;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
-import javax.swing.JTextPane;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
@@ -33,7 +32,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientChat;
-import db.FriendDTO;
+import db.FavoriteDTO;
 import db.MemberDTO;
 import db.PostDTO;
 
@@ -46,16 +45,11 @@ public class HomeFrame extends JFrame {
 	private JPanel tab_4 = new JPanel();
 
 	private JPanel searchP = new JPanel();
-	private onePost post = null;
-	private JPanel panel = null;
-	private JScrollPane TMscrollPane = null;
-	private JScrollPane MPscrollPane = null;
-	private JPanel myPost = null;
+
 	private JButton searchM = new JButton();
 
 	private static ClientChat nowCc = null;
 	private static String nowId = null;
-	int postNum = -1;
 
 	private static HomeFrame HomeF = null;
 
@@ -63,7 +57,16 @@ public class HomeFrame extends JFrame {
 		super("SNS Program");
 	}
 
-	public void Frame(Object o) {
+	public static HomeFrame getInstance(String id, ClientChat cc) {
+		nowId = id;
+		nowCc = cc;
+		if (HomeF == null) {
+			HomeF = new HomeFrame();
+		}
+		return HomeF;
+	}
+
+	public void Frame() {
 		// TODO Auto-generated method stub
 		this.setLayout(new BorderLayout());
 		this.setBounds(200, 100, 500, 500);
@@ -78,70 +81,147 @@ public class HomeFrame extends JFrame {
 		this.add(tabPane, "Center");
 
 		this.setLocationRelativeTo(null);
-		this.setDefaultCloseOperation(this.DISPOSE_ON_CLOSE);
 		this.setVisible(true);
 
-	}
+		this.setDefaultCloseOperation(this.DO_NOTHING_ON_CLOSE);
 
-	public static HomeFrame getInstance(String id, ClientChat cc) {
-		nowId = id;
-		nowCc = cc;
-		if (HomeF == null) {
-			HomeF = new HomeFrame();
-		}
-		return HomeF;
+		// 윈도우 동작을 읽는 리스너 : HomeFrame 창을 X 버튼을 눌러 닫을시 로그아웃 처리
+		this.addWindowListener(new WindowListener() {
+
+			@Override
+			public void windowOpened(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowIconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowDeiconified(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowDeactivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowClosing(WindowEvent e) {
+				// TODO Auto-generated method stub
+				nowCc.chkSet("logout:" + nowCc.getNowCcId());
+			}
+
+			@Override
+			public void windowClosed(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void windowActivated(WindowEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
 	}
 
 	private void createTimeline() {
+		// TODO Auto-generated method stub
 		tab_1.setLayout(null);
 		tab_1.setBorder(new EmptyBorder(5, 5, 5, 5));
 
-		JPanel contentPane = new JPanel();
-		contentPane.setLayout(new BorderLayout());
-		contentPane.setBounds(0, 0, 500, 500);
+		JPanel timeline = new JPanel();
+		timeline.setLayout(new BorderLayout());
+		timeline.setBounds(0, 0, 480, 435);
 
-		TMscrollPane = new JScrollPane();
-		TMscrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		TMscrollPane.setBorder(null);
-		TMscrollPane.setBounds(0, 0, 400, 500);
-		TMscrollPane.setPreferredSize(new Dimension(400, 500));
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 0, 480, 435);
+		scrollPane.setPreferredSize(new Dimension(450, 1000));
+		timeline.add(scrollPane);
 
-		// 포스팅을 요청하자 // 아래 위가 바껴서 나옴
-		post = new onePost();
-		bringPost();
-		tab_1.add(contentPane);
+		JPanel myPost = new JPanel();
+		myPost.setLayout(new BoxLayout(myPost, BoxLayout.Y_AXIS));
 
-		JButton refresh = new JButton("refresh");
-		refresh.addActionListener(new ActionListener() { // 현재 띄워진 가장 최근의 게시물의 번호나 시간을 보내주고 디비에 저장된 새로운 포스팅을 가져오자
+		scrollPane.setViewportView(myPost);
+
+		Object o = nowCc.getObject("getList:" + "post" + "/" + nowId + "/t");
+		ArrayList<Object> pList = (ArrayList<Object>) o;
+
+		settingPostView(pList, myPost, nowId);
+
+		JPanel Btn = new JPanel();
+		Btn.setLayout(new FlowLayout(FlowLayout.RIGHT, 8, 3));
+
+		JButton RefreshBtn = new JButton("Refresh");
+		RefreshBtn.setPreferredSize(new Dimension(97, 23));
+
+		RefreshBtn.addActionListener(new ActionListener() {
+
+			@Override
 			public void actionPerformed(ActionEvent e) {
-				bringPost();
+				// TODO Auto-generated method stub
+				System.out.println("/RefreshBtn Click:Timeline");
+
+				myPost.removeAll();
+
+				Object o = nowCc.getObject("getList:" + "post" + "/" + nowId + "/t");
+				ArrayList<Object> pList = (ArrayList<Object>) o;
+
+				settingPostView(pList, myPost, nowId);
+
+				// 레이아웃 변경을 적용하고 다시 그림
+				revalidate();
+				repaint();
 			}
 		});
-		contentPane.add(refresh, "North");
-		contentPane.add(TMscrollPane, "Center");
 
+		JButton PostWriteBtn = new JButton("Write");
+		PostWriteBtn.setPreferredSize(new Dimension(97, 23));
+
+		PostWriteBtnListner(PostWriteBtn, nowCc);
+
+		Btn.add(PostWriteBtn);
+		Btn.add(RefreshBtn);
+
+		timeline.add(scrollPane, "Center");
+		timeline.add(Btn, "South");
+
+		tab_1.add(timeline);
 	}
 
-	private void bringPost() {
-		panel = new JPanel();
-		panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+	// PostList, PostList를 띄우는 그룹화 된 Panel이 들어갈 JPanel, 글을 보고 있는 사용자 Id
+	private void settingPostView(ArrayList<Object> pList, JPanel postPanel, String id) {
+		OnePostFrame pF = new OnePostFrame(nowCc, nowId);
 
-		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
-		if (al != null) {
-			for (int i = 0; i < al.size(); i++) {
-				PostDTO m = (PostDTO) al.get(i);
-				panel.add(post.createPost(m));
-				postNum = Integer.valueOf(m.getNo());
+		
+		if (pList.size() > 0) {
+			ArrayList<Object> fvList = (ArrayList<Object>) nowCc.getObject("getList:favorite/" + nowId);
+			for (int i = 0; i < pList.size(); i++) {
+				PostDTO p = (PostDTO) pList.get(i);
+				postPanel.add(pF.viewPost(p, fvList));
+
 			}
-		} else {
-			// 불러올 목록 없음 띄워주기
+		} else if (pList.size() == 0) {
+			JPanel temp = new JPanel();
+			temp.setLayout(new BorderLayout());
+			JLabel empty = new JLabel("Empty Post");
+			empty.setHorizontalAlignment(JLabel.CENTER);
+			temp.add(empty, "Center");
+			postPanel.add(temp);
 		}
-		TMscrollPane.setViewportView(panel);
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
 		// TODO Auto-generated method stub
-		Object receiveObject = nowCc.getDBObject("profile:" + id);
+		Object receiveObject = nowCc.getObject("profile:" + id);
 		MemberDTO my = (MemberDTO) receiveObject;
 
 		tab_2.setLayout(null);
@@ -165,6 +245,23 @@ public class HomeFrame extends JFrame {
 		FrListBtn.setFont(font.deriveFont(attributes));
 		tab_2.add(FrListBtn);
 
+		FrListBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Object receiveObject = null;
+
+				if (nowId.equals(id)) {
+					receiveObject = nowCc.getObject("getList:" + "friend" + "/" + nowId);
+				} else if (!nowId.equals(id)) {
+					receiveObject = nowCc.getObject("getList:" + "friend" + "/" + id);
+				}
+
+				new FriendFrame(HomeF, nowCc, receiveObject);
+			}
+		});
+
 		// 관심글 목록 Button
 		JButton FListBtn = new JButton("Favorite");
 		FListBtn.setBounds(345, 55, 95, 20);
@@ -176,20 +273,38 @@ public class HomeFrame extends JFrame {
 		FListBtn.setFont(font.deriveFont(attributes));
 		tab_2.add(FListBtn);
 
+		FListBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				// getList - 조건 : 관심글 등록자=대상자 Id
+			}
+		});
+
 		// 내가 쓴 글 (스크롤 기능)
 		JPanel myPostAll = new JPanel();
 		myPostAll.setLayout(null);
 		myPostAll.setBounds(0, 120, 480, 285);
 
-		MPscrollPane = new JScrollPane();
-		MPscrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-		MPscrollPane.setBounds(0, 120, 480, 285);
-		MPscrollPane.setPreferredSize(new Dimension(450, 1000));
-		myPostAll.add(MPscrollPane);
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 120, 480, 285);
+		scrollPane.setPreferredSize(new Dimension(450, 1000));
+		myPostAll.add(scrollPane);
 
-		bringMyPost();
+		JPanel myPost = new JPanel();
+		myPost.setLayout(new BoxLayout(myPost, BoxLayout.Y_AXIS));
 
-		tab_2.add(MPscrollPane);
+		scrollPane.setViewportView(myPost);
+
+		// 자신이 쓴 글 List 받아오기
+		Object receiveObject_myPost = nowCc.getObject("getList:" + "post" + "/" + id);
+		ArrayList<Object> myPList = (ArrayList<Object>) receiveObject_myPost;
+
+		settingPostView(myPList, myPost, id);
+
+		tab_2.add(scrollPane);
 
 		if (this.nowId.equals(id)) {
 			JButton MyPageBtn = new JButton("MyPage");
@@ -197,6 +312,7 @@ public class HomeFrame extends JFrame {
 			tab_2.add(MyPageBtn);
 
 			MyPageBtn.addActionListener(new ActionListener() {
+
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
@@ -208,51 +324,40 @@ public class HomeFrame extends JFrame {
 			PostWriteBtn.setBounds(270, 410, 97, 23);
 			tab_2.add(PostWriteBtn);
 
-			PostWriteBtn.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					WritePostFrame writePostFrame = new WritePostFrame(nowCc);
-				}
-			});
+			PostWriteBtnListner(PostWriteBtn, nowCc);
 		} else {
-			receiveObject = nowCc.getDBObject("setList:" + "friend" + "/" + nowId);
-			ArrayList<Object> fList = (ArrayList<Object>) receiveObject;
-
 			JButton FollowBtn = new JButton();
 			FollowBtn.setBounds(12, 410, 97, 23);
 
-			boolean a = false;
-			for (int i = 0; i < fList.size(); i++) {
-				FriendDTO f = (FriendDTO) fList.get(i);
-				if (f.getMyId().equals(nowId) && f.getyourId().equals(id)) {
-					FollowBtn.setText("Unfollow");
-					a = true;
-					break;
-				} else {
-					a = false;
-				}
-				if (a == false) {
-					FollowBtn.setText("Follow");
-				}
-				tab_2.add(FollowBtn);
+			nowCc.send("chkfollow:" + nowId + "/" + id);
+			nowCc.receive();
 
-				FollowBtn.addActionListener(new ActionListener() {
+			if (nowCc.getReceiveMessage().contains("true")) {
+				FollowBtn.setText("Unfollow");
+			} else {
+				FollowBtn.setText("Follow");
+			}
 
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-						if (FollowBtn.getText().equals("Follow")) {
-							nowCc.chkSet("addfollow:" + nowId + "/" + id);
+			tab_2.add(FollowBtn);
+			FollowBtn.addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					if (FollowBtn.getText().equals("Follow")) {
+						nowCc.chkSet("addfollow:" + nowId + "/" + id);
 
-							if (nowCc.getChkMessage().indexOf("true") != -1) {
-								FollowBtn.setText("Unfollow");
-							}
-						} else if (FollowBtn.getText().equals("Unfollow")) {
-							nowCc.chkSet("delfollow" + nowId + "/" + id);
+						if (nowCc.getChkMessage().indexOf("true") != -1) {
+							FollowBtn.setText("Unfollow");
+						}
+					} else if (FollowBtn.getText().equals("Unfollow")) {
+						nowCc.chkSet("delfollow:" + nowId + "/" + id);
+
+						if (nowCc.getChkMessage().indexOf("true") != -1) {
+							FollowBtn.setText("Follow");
 						}
 					}
-				});
-			}
+				}
+			});
 		}
 
 		JButton RefreshBtn = new JButton("Refresh");
@@ -260,74 +365,34 @@ public class HomeFrame extends JFrame {
 		tab_2.add(RefreshBtn);
 
 		RefreshBtn.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				bringMyPost();
+				// TODO Auto-generated method stub
+				System.out.println("/RefreshBtn Click:Profile");
+
+				myPost.removeAll();
+
+				Object receiveObject_Post = nowCc.getObject("getList:" + "post" + "/" + id);
+				ArrayList<Object> pList = (ArrayList<Object>) receiveObject_Post;
+
+				settingPostView(pList, myPost, id);
+
+				myPost.revalidate();
+				myPost.repaint();
 			}
 		});
-
 	}
 
-	private void bringMyPost() {
-		myPost = new JPanel();
-		myPost.setLayout(new BoxLayout(myPost, BoxLayout.Y_AXIS));
-		ArrayList<Object> al = (ArrayList<Object>) nowCc.getDBObject("setList:post" + "/" + nowId);
-		if (al != null) {
-			for (int i = 0; i < al.size(); i++) {
-				PostDTO m = (PostDTO) al.get(i);
-				myPost.add(viewMyPost(m));
-			}
-		} else {
-			// 불러올 목록 없음 띄워주기
-		}
-		MPscrollPane.setViewportView(myPost);
-	}
+	private void PostWriteBtnListner(JButton PostWriteBtn, ClientChat nowCc) {
+		PostWriteBtn.addActionListener(new ActionListener() {
 
-	private Panel viewMyPost(PostDTO postDTO) { // 새로운 클래스를 만들어서 사용하자!
-		Panel Mp = new Panel();
-		Mp.setBounds(10, 120, 465, 240);
-
-		JTextPane myPostContent = new JTextPane();
-		myPostContent.setText(postDTO.getText());
-
-		JButton myPostfavoriteBtn = new JButton("Favorite");
-
-		myPostfavoriteBtn.addActionListener(new ActionListener() {
+			@Override
 			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				WritePostFrame writePost = new WritePostFrame(nowCc);
 			}
 		});
-
-		JButton myPostModifyBtn = new JButton("Modify");
-		myPostModifyBtn.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-			}
-		});
-
-		JLabel writerId = new JLabel(nowId);
-
-		JLabel myPostFavoriteNum = new JLabel("Favorite num");
-
-		JButton myPostDeleteBtn = new JButton("Delete");
-
-		GroupLayout gl_panel = new GroupLayout(Mp);
-		gl_panel.setHorizontalGroup(gl_panel.createParallelGroup(Alignment.LEADING).addGroup(gl_panel
-				.createSequentialGroup().addGap(12)
-				.addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addComponent(writerId)
-						.addComponent(myPostContent, GroupLayout.PREFERRED_SIZE, 400, GroupLayout.PREFERRED_SIZE)
-						.addGroup(gl_panel.createSequentialGroup().addComponent(myPostfavoriteBtn).addGap(8)
-								.addComponent(myPostFavoriteNum).addGap(98).addComponent(myPostDeleteBtn).addGap(1)
-								.addComponent(myPostModifyBtn)))));
-		gl_panel.setVerticalGroup(gl_panel.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_panel.createSequentialGroup().addGap(19).addComponent(writerId).addGap(10)
-						.addComponent(myPostContent, GroupLayout.PREFERRED_SIZE, 145, GroupLayout.PREFERRED_SIZE)
-						.addGap(10)
-						.addGroup(gl_panel.createParallelGroup(Alignment.LEADING).addComponent(myPostfavoriteBtn)
-								.addGroup(gl_panel.createSequentialGroup().addGap(4).addComponent(myPostFavoriteNum))
-								.addComponent(myPostDeleteBtn).addComponent(myPostModifyBtn))));
-
-		Mp.setLayout(gl_panel);
-
-		return Mp;
 	}
 
 	private void createDirectMessage() {
@@ -353,6 +418,7 @@ public class HomeFrame extends JFrame {
 		tab_4.add(searchR, "Center");
 
 		searchM.addActionListener(new ActionListener() {
+
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
@@ -364,7 +430,7 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void createSearchData(JTextField txtInput) {
-		Object receiveObject = nowCc.getDBObject("setList:" + "member" + "/" + nowId);
+		Object receiveObject = nowCc.getObject("setList:" + "member" + "/" + nowId);
 		setupAutoComplete(txtInput, (ArrayList<Object>) receiveObject);
 		txtInput.setColumns(30);
 	}

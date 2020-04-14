@@ -3,10 +3,10 @@ package server;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.ObjectOutputStream;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 import db.DAOCenter;
+import db.FavoriteDTO;
 import db.FriendDTO;
 import db.MemberDTO;
 import db.PostDTO;
@@ -18,8 +18,6 @@ public class ServerCenter {
 	private ArrayList<ServerChat> sList = new ArrayList<>();
 
 	private boolean idChk = false;
-	private String msg = null;
-	private String reMsg = null;
 
 	ServerCenter() {
 		Dc = DAOCenter.getInstance();
@@ -46,89 +44,119 @@ public class ServerCenter {
 
 	public void receiveClientMsg(String msg, ServerChat sc) {
 		nowSc = sc;
-		this.msg = msg;
 
-		if (msg.indexOf("login:") != -1) { // login/
+		if (msg.indexOf("login:") != -1) {
 			login(msg);
+		} else if (msg.indexOf("logout:") != -1) {
+			logout(msg);
 		} else if (msg.indexOf("join:") != -1) {
 			join(msg);
 		} else if (msg.indexOf("idCheck:") != -1) {
 			idChk = idCheck(msg);
 		} else if (msg.indexOf("setList:") != -1) {
 			setList(msg);
+		} else if (msg.indexOf("getList:") != -1) {
+			getList(msg);
 		} else if (msg.indexOf("profile:") != -1) {
 			viewProfile(msg);
 		} else if (msg.indexOf("myPage:") != -1) {
-			 myPage(msg);
+			myPage(msg);
 		} else if (msg.indexOf("follow:") != -1) {
 			followFriend(msg);
-		} else if (msg.indexOf("sharePost:") != -1) {
-			sharePost(msg);
-		} else if (msg.indexOf("addFriend:") != -1) { // 친구 목록은 setList:로 얻쟈!!
-			//addFriend();
-		} 
-		
-
-	}
-	private void sharePost(String msg) { // 작성자와 팔로워들에게 보내주기
-		String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
-		String id = reMsg.substring(0, reMsg.indexOf("/"));
-		String post = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
-
-		PostDTO pDTO = new PostDTO();
-		
-		pDTO.setId(id);
-		pDTO.setText(post);
-
-		Dc.insert("post", pDTO); // 작성글 받아서 DB에 저장
+		} else if (msg.indexOf("Post:") != -1) {
+			post(msg);
+		}  else if (msg.indexOf("favorite:") != -1) {
+			list(msg);
+		}
 	}
 
-	private Object getList() {
-		// TODO Auto-generated method stub
-		String tName = msg.substring(msg.indexOf(":") + 1, msg.lastIndexOf("/"));
-		if (nowSc.getNowScId().equals(msg.substring(msg.lastIndexOf("/") + 1, msg.length()))) {
-			try {
-				switch (tName) {
-				case "member":
-					return Dc.getDB("member", nowSc.getNowScId());
-				case "post":
-					return Dc.getDB("post", nowSc.getNowScId());
-				case "favorite":
-					return Dc.getDB("favorite", nowSc.getNowScId());
-				case "friend":
-					return Dc.getDB("friend", nowSc.getNowScId());
-				}
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+	private void list(String msg) {
+		
+		String myId = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
+		String postNo = msg.substring(msg.indexOf("/") + 1, msg.length());
+		FavoriteDTO fv = new FavoriteDTO();
+		fv.setNo(postNo);
+		fv.setId(myId);
+
+		if (msg.contains("addfavorite:")) {
+			if (Dc.insert("favorite", fv)) {
+			}
+		} else if (msg.contains("delfavorite:")) {
+			// follow 풀기
+			if (Dc.delete("favorite", fv)) {
 			}
 		}
-		return null;
 	}
+
+	private void post(String msg) {
+		if (msg.contains("sharePost:")) {
+			String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
+			String id = reMsg.substring(0, reMsg.indexOf("/"));
+			String post = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
+
+			PostDTO p = new PostDTO();
+			p.setId(id);
+			p.setText(post);
+
+			if (Dc.insert("post", p)) {
+				nowSc.send("Write true");
+			} else {
+				if (post.length() > 200) {
+					nowSc.send("Write false : text length over 200");
+				} else {
+					nowSc.send("Write false : Please input text");
+				}
+			}
+		} else if (msg.contains("deletePost:")) {
+			if (msg.indexOf("sure") != -1) {
+				String postNum = msg.substring(msg.indexOf("/") + 1, msg.length());
+				if (Dc.delete("post", postNum)) {
+					nowSc.send("Post Delete true");
+				}
+			} else {
+				String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
+				String id = reMsg.substring(0, reMsg.indexOf("/"));
+				String postNum = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
+
+				nowSc.send("Post Delete hope" + ":" + postNum);
+			}
+		}
+	}
+
 	private void followFriend(String msg) {
 		// TODO Auto-generated method stub
 		String myId = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
 		String yourId = msg.substring(msg.indexOf("/") + 1, msg.length());
 
-		if (msg.contains("add")) {
-			FriendDTO f = new FriendDTO();
-			f.setMyId(myId);
-			f.setyourId(yourId);
+		FriendDTO f = new FriendDTO();
+		f.setMyId(myId);
+		f.setYourId(yourId);
 
+		if (msg.contains("addfollow:")) {
 			if (Dc.insert("friend", f)) {
 				nowSc.send("Follow true");
 			} else {
 				nowSc.send("Follow false");
 			}
-		} else if (msg.contains("del")) {
+		} else if (msg.contains("delfollow:")) {
 			// follow 풀기
-
+			if (Dc.delete("friend", f)) {
+				nowSc.send("Unfollow true");
+			} else {
+				nowSc.send("Unfollow false");
+			}
+		} else if (msg.contains("chkfollow:")) {
+			if (Dc.select("friend", f)) {
+				nowSc.send("true");
+			} else {
+				nowSc.send("false");
+			}
 		}
 	}
 
 	private void myPage(String msg) {
 		// TODO Auto-generated method stub
-		if (msg.indexOf("update") != -1) {
+		if (msg.indexOf("updatemyPage:") != -1) {
 			String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
 			String id = reMsg.substring(0, reMsg.indexOf("/"));
 			String pwd = reMsg.substring(reMsg.indexOf("/") + 1, reMsg.lastIndexOf("/"));
@@ -153,7 +181,7 @@ public class ServerCenter {
 					}
 				}
 			}
-		} else if (msg.indexOf("delete") != -1) {
+		} else if (msg.indexOf("deletemyPage:") != -1) {
 			if (msg.indexOf("sure") != -1) {
 				if (Dc.delete("member", nowSc.getNowScId())) {
 					for (ServerChat i : sList) {
@@ -193,8 +221,9 @@ public class ServerCenter {
 
 	private void viewProfile(String msg) {
 		// TODO Auto-generated method stub
-		String id = msg.substring(msg.indexOf(":") + 1, msg.length());
 		try {
+			String id = msg.substring(msg.indexOf(":") + 1, msg.length());
+
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ObjectOutputStream os = new ObjectOutputStream(bos);
 
@@ -208,6 +237,7 @@ public class ServerCenter {
 		}
 	}
 
+	// 조건 없이 table의 tuple 모두 가져오기
 	private void setList(String msg) {
 		// TODO Auto-generated method stub
 		String tName = null;
@@ -226,13 +256,13 @@ public class ServerCenter {
 					os.writeObject(Dc.getDB("member"));
 					break;
 				case "post":
-					os.writeObject(Dc.getDB("post", id));
+					os.writeObject(Dc.getDB("post"));
 					break;
 				case "favorite":
 					os.writeObject(Dc.getDB("favorite"));
 					break;
 				case "friend":
-					os.writeObject(Dc.getDB("friend", id));
+					os.writeObject(Dc.getDB("friend"));
 					break;
 				}
 
@@ -242,6 +272,42 @@ public class ServerCenter {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		}
+	}
+
+	// 조건 있이 table에서 맞는 tuple만 가져오기
+	private void getList(String msg) {
+		// TODO Auto-generated method stub
+		String tName = null;
+		String keyword = null;
+
+		tName = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
+		keyword = msg.substring(msg.indexOf("/") + 1, msg.length());
+
+		try {
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ObjectOutputStream os = new ObjectOutputStream(bos);
+
+			switch (tName) {
+			case "member":
+				os.writeObject(Dc.getDB("member", keyword));
+				break;
+			case "post":
+				os.writeObject(Dc.getDB("post", keyword));
+				break;
+			case "favorite":
+				os.writeObject(Dc.getDB("favorite", keyword));
+				break;
+			case "friend":
+				os.writeObject(Dc.getDB("friend", keyword));
+				break;
+			}
+
+			byte[] resultByte = bos.toByteArray();
+			nowSc.sendDB(resultByte);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
@@ -265,6 +331,18 @@ public class ServerCenter {
 			}
 		}
 		return false;
+	}
+
+	private void logout(String msg) {
+		// TODO Auto-generated method stub
+		String id = msg.substring(msg.indexOf(":") + 1, msg.length());
+
+		if (msg.indexOf("sure") != -1) {
+			nowSc.send("Logout true");
+			sList.remove(nowSc);
+		} else {
+			nowSc.send("Logout hope");
+		}
 	}
 
 	private void login(String msg) {
