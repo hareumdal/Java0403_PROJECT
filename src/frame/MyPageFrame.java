@@ -31,8 +31,8 @@ public class MyPageFrame extends JFrame {
 		this.nowCc = cc;
 		this.nowId = id;
 
-		cc.send("myPage:" + id);
-		MemberDTO my = (MemberDTO) cc.receiveObject();
+	//	cc.send("myPage:" + id);
+		MemberDTO my = (MemberDTO) cc.getObject("myPage:" + id);
 
 		Frame(my);
 	}
@@ -101,7 +101,7 @@ public class MyPageFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				nowCc.chkSet("deletemyPage:" + nowId);
+				nowCc.send("deletemyPage:" + nowId);
 			}
 		});
 
@@ -138,7 +138,7 @@ public class MyPageFrame extends JFrame {
 						msg = msg + content[i] + "/";
 					}
 				}
-				nowCc.chkSet(msg);
+				nowCc.send(msg);
 
 				if (nowCc.getChkMessage().indexOf("true") != -1) {
 					dispose();

@@ -75,7 +75,7 @@ public class JoinFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				String msg = "idCheck:" + textField[0].getText();
-				nowCc.chkSet(msg);
+				nowCc.send(msg);
 			}
 		});
 		
@@ -133,7 +133,7 @@ public class JoinFrame extends JFrame {
 						msg = msg + content[i] + "/";
 					}
 				}
-				nowCc.chkSet(msg);
+				nowCc.send(msg);
 				
 				if(nowCc.getChkMessage().indexOf("true")!=-1){
 					dispose();

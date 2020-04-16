@@ -22,10 +22,10 @@ public class ChkFrame extends JFrame {
 
 	private String chkMsg = null;
 
-	public ChkFrame(String chk, ClientChat cc) {
+	public ChkFrame(String chk, ClientChat c) {
 		super("Check");
 		setResizable(false);
-		this.nowCc = cc;
+		this.nowCc = c;
 		this.chkMsg = chk;
 		nowChkF = this;
 		Frame();
@@ -109,10 +109,10 @@ public class ChkFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated stub
 					if (chkMsg.contains("MyPage")) {
-						nowCc.chkSet("deletemyPage:sure");
+						nowCc.send("deletemyPage:sure");
 					} else if (chkMsg.contains("Post")) {
 						String postNum = chkMsg.substring(chkMsg.indexOf(":") + 1, chkMsg.length());
-						nowCc.chkSet("deletePost:sure" + "/" + postNum);
+						nowCc.send("deletePost:sure" + "/" + postNum);
 					}
 					setVisible(false);
 				}
@@ -136,7 +136,7 @@ public class ChkFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated stub
 					setVisible(false);
-					nowCc.chkSet("logout:sure");
+					nowCc.send("logout:sure");
 				}
 			});
 
@@ -160,10 +160,8 @@ public class ChkFrame extends JFrame {
 				});
 			} else {
 				OkBtn.addActionListener(new ActionListener() {
-
 					@Override
 					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
 						setVisible(false);
 						nowCc.Home(chkMsg, nowCc);
 					}

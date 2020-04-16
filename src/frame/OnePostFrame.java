@@ -98,7 +98,7 @@ public class OnePostFrame {
 			@Override
 			public void actionPerformed(ActionEvent arg0) { // 좋아요도 같이 사라져야 하지 않을까
 				// TODO Auto-generated method stub
-				nowCc.chkSet("deletePost:" + nowId + "/" + p.getNo());
+				nowCc.send("deletePost:" + nowId + "/" + p.getNo());
 			}
 		});
 

@@ -32,7 +32,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientChat;
-import db.FavoriteDTO;
+import db.DirectMessageDTO;
 import db.MemberDTO;
 import db.PostDTO;
 
@@ -115,7 +115,7 @@ public class HomeFrame extends JFrame {
 			@Override
 			public void windowClosing(WindowEvent e) {
 				// TODO Auto-generated method stub
-				nowCc.chkSet("logout:" + nowCc.getNowCcId());
+				nowCc.send("logout:" + nowCc.getNowCcId());
 			}
 
 			@Override
@@ -201,7 +201,6 @@ public class HomeFrame extends JFrame {
 	private void settingPostView(ArrayList<Object> pList, JPanel postPanel, String id) {
 		OnePostFrame pF = new OnePostFrame(nowCc, nowId);
 
-		
 		if (pList.size() > 0) {
 			ArrayList<Object> fvList = (ArrayList<Object>) nowCc.getObject("getList:favorite/" + nowId);
 			for (int i = 0; i < pList.size(); i++) {
@@ -209,7 +208,7 @@ public class HomeFrame extends JFrame {
 				postPanel.add(pF.viewPost(p, fvList));
 
 			}
-		} else if (pList.size() == 0) {
+		} else if (pList.size() == 0 || pList == null) {
 			JPanel temp = new JPanel();
 			temp.setLayout(new BorderLayout());
 			JLabel empty = new JLabel("Empty Post");
@@ -330,7 +329,6 @@ public class HomeFrame extends JFrame {
 			FollowBtn.setBounds(12, 410, 97, 23);
 
 			nowCc.send("chkfollow:" + nowId + "/" + id);
-			nowCc.receive();
 
 			if (nowCc.getReceiveMessage().contains("true")) {
 				FollowBtn.setText("Unfollow");
@@ -344,13 +342,13 @@ public class HomeFrame extends JFrame {
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
 					if (FollowBtn.getText().equals("Follow")) {
-						nowCc.chkSet("addfollow:" + nowId + "/" + id);
+						nowCc.send("addfollow:" + nowId + "/" + id);
 
 						if (nowCc.getChkMessage().indexOf("true") != -1) {
 							FollowBtn.setText("Unfollow");
 						}
 					} else if (FollowBtn.getText().equals("Unfollow")) {
-						nowCc.chkSet("delfollow:" + nowId + "/" + id);
+						nowCc.send("delfollow:" + nowId + "/" + id);
 
 						if (nowCc.getChkMessage().indexOf("true") != -1) {
 							FollowBtn.setText("Follow");
@@ -396,7 +394,34 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void createDirectMessage() {
-		// TODO Auto-generated method stub
+
+//		tab_3.setLayout(null);
+//		tab_3.setBorder(new EmptyBorder(5, 5, 5, 5));
+//
+//		JScrollPane scrollPane = new JScrollPane();
+//		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+//		scrollPane.setBounds(0, 0, 480, 435);
+//		scrollPane.setPreferredSize(new Dimension(450, 1000));
+//		tab_3.add(scrollPane);
+//
+//		JPanel oneUserPanel = new JPanel();
+//		oneUserPanel.setLayout(new BoxLayout(oneUserPanel, BoxLayout.Y_AXIS));
+//
+//		settingViewDM(oneUserPanel);
+//		scrollPane.setViewportView(oneUserPanel);
+
+	}
+
+	private void settingViewDM(JPanel oneUserPanel) {
+		OneDMFrame oneDMFrame = new OneDMFrame();
+
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dm/" + nowId);
+
+		for (int i = 0; i < dmList.size(); i++) {
+			DirectMessageDTO dm = (DirectMessageDTO) dmList.get(i);
+			oneDMFrame.oneDM(oneUserPanel, dm, nowCc);
+		}
+
 	}
 
 	private void createSearch() {

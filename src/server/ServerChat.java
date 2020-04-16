@@ -3,10 +3,13 @@ package server;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
 public class ServerChat extends Thread {
-	private Socket withClient = null;
+	private Socket withClientDM = null;
+	private ServerSocket serverObject = null;
+	private Socket withClientObject = null;
 	private ServerCenter sc = null;
 	private ServerChat nowSc = null;
 
@@ -15,15 +18,21 @@ public class ServerChat extends Thread {
 
 	private String nowId = null;
 
-	ServerChat(Socket c, ServerCenter sc) {
-		this.withClient = c;
+	ServerChat(Socket c, ServerSocket serverObject, ServerCenter sc) {
+		this.withClientDM = c;
+		this.serverObject = serverObject;
 		this.sc = sc;
 		this.nowSc = this;
 	}
 
+	public int getPortNum() {
+	//	serverObject.getLocalPort()
+		return serverObject.getLocalPort();
+	}
+
 	@Override
 	public void run() {
-		// TODO Auto-generated method stub
+		// send("port:" + withClientObject.getPort());
 		receive();
 	}
 
@@ -31,16 +40,14 @@ public class ServerChat extends Thread {
 		return nowId;
 	}
 
-	private void receive() {
-		// TODO Auto-generated method stub
+	public void receiveObject() { // 일단 String을 받고 객체 보내 주는 걸로 쓰자
 		new Thread(new Runnable() {
-
 			@Override
 			public void run() {
-				// TODO Auto-generated method stub
 				try {
+					withClientObject = serverObject.accept();
 					while (true) {
-						reMsg = withClient.getInputStream();
+						reMsg = withClientObject.getInputStream();
 						byte[] buffer = new byte[256];
 						reMsg.read(buffer);
 						String reMsg = new String(buffer);
@@ -50,12 +57,33 @@ public class ServerChat extends Thread {
 						if (reMsg.indexOf("setList:") != -1) {
 							nowId = reMsg.substring(reMsg.indexOf("/") + 1, reMsg.length());
 						}
-
 						sc.receiveClientMsg(reMsg, nowSc);
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					// e.printStackTrace();
+					System.out.println("Client Logout");
+				}
+			}
+		}).start();
+	}
+
+	private void receive() {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				try {
+					while (true) {
+						reMsg = withClientDM.getInputStream();
+						byte[] buffer = new byte[256];
+						reMsg.read(buffer);
+						String reMsg = new String(buffer);
+						reMsg = reMsg.trim();
+						System.out.println(reMsg);
+						if (reMsg.indexOf("setList:") != -1) {
+							nowId = reMsg.substring(reMsg.indexOf("/") + 1, reMsg.length());
+						}
+						sc.receiveClientMsg(reMsg, nowSc);
+					}
+				} catch (IOException e) {
 					System.out.println("Client Logout");
 				}
 			}
@@ -63,24 +91,29 @@ public class ServerChat extends Thread {
 	}
 
 	public void send(String msg) {
-		// TODO Auto-generated method stub
 		try {
 			String sMsg = msg;
-			seMsg = withClient.getOutputStream();
+			seMsg = withClientDM.getOutputStream();
 			seMsg.write(sMsg.getBytes());
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			// e.printStackTrace();
 			System.out.println("Client Logout");
 		}
 	}
 
+//	public void sendObject() {
+//		try {
+//			seMsg = withClientObject.getOutputStream();
+//			seMsg.write(("port:" + withClientObject.getPort()).getBytes());
+//		} catch (IOException e) {
+//			System.out.println("Client Logout");
+//		}
+//	}
+
 	public void sendDB(byte[] resultByte) {
 		try {
-			seMsg = withClient.getOutputStream();
+			seMsg = withClientObject.getOutputStream();
 			seMsg.write(resultByte);
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

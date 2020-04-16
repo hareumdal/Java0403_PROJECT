@@ -28,22 +28,14 @@ public class PostDAO implements DAOInterface {
 
 	@Override
 	public boolean insert(Object DTO) {
-		// TODO Auto-generated method stub
 		try {
-//			PostDTO p = (PostDTO)DTO;
-//			String sql = "insert into post values(no.nextval, sysdate, ?, ?)";
-//			PreparedStatement psmt = con.prepareStatement(sql);
-//			
-//			psmt.setString(1, p.getId());
-//			psmt.setString(2, p.getText());
-
 			PostDTO p = (PostDTO) DTO;
-			String sql = "insert into post values(?, sysdate, ?, ?)";
+			String sql = "insert into post values(no.nextval, sysdate, ?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
 
-			psmt.setString(1, String.valueOf("15"));
-			psmt.setString(2, p.getId());
-			psmt.setString(3, p.getText());
+		
+			psmt.setString(1, p.getId());
+			psmt.setString(2, p.getText());
 
 			int a = psmt.executeUpdate();
 

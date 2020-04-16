@@ -357,8 +357,12 @@ public class ServerCenter {
 		m.setId(id);
 		m.setPwd(pwd);
 
-		if (Dc.select("member", m)) {
 			nowSc.send("Login true");
+			//nowSc.send(reMsg);
+			nowSc.receiveObject();
+			System.out.println("server:::::" + nowSc.getPortNum());
+			nowSc.send("port:" + nowSc.getPortNum());
+			if (Dc.select("member", m)) {
 		} else {
 			nowSc.send("Login false");
 		}
@@ -368,7 +372,7 @@ public class ServerCenter {
 		String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
 		String id = reMsg.substring(0, reMsg.indexOf("/"));
 		String pwd = reMsg.substring(reMsg.indexOf("/") + 1, reMsg.lastIndexOf("/"));
-		String phone = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
+		String phone = reMsg.substring(+reMsg.lastIndexOf("/") + 1, reMsg.length());
 
 		if (idChk == true) {
 			if (phone.length() > 11) {
