@@ -11,16 +11,24 @@ import javax.swing.GroupLayout.Alignment;
 
 public class OneDMFrame {
 
+	private ClientChat nowCc = null;
+	private String nowId = null;
+	
+	public OneDMFrame(ClientChat nowCc, String nowId) {
+		this.nowCc = nowCc;
+		this.nowId = nowId;
+	}
 	
 	
-	public void oneDM(JPanel oneUserPanel, DirectMessageDTO dm, ClientChat nowCc) {
+	public JPanel oneDM(DirectMessageDTO dm) {
+		this.nowCc = nowCc;
+		
 		JPanel oneUser = new JPanel();
 		oneUser.setBounds(12, 35, 410, 64);
-		oneUserPanel.add(oneUser);
-	
-		JLabel lblUserID = new JLabel("userID");
 		
-		JLabel lblUserNewDM = new JLabel("userNewDM");
+		JLabel lblUserID = new JLabel(nowId);
+		
+		JLabel lblUserNewDM = new JLabel("메세지를 확인하세요!");
 		
 		JLabel lblSendDate = new JLabel("sendDate");
 		
@@ -47,5 +55,9 @@ public class OneDMFrame {
 					.addComponent(lblUserNewDM))
 		);
 		oneUser.setLayout(gl_oneUser);
+		
+		
+		return oneUser;
+		
 	}
 }

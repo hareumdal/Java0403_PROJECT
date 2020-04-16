@@ -344,13 +344,13 @@ public class HomeFrame extends JFrame {
 					if (FollowBtn.getText().equals("Follow")) {
 						nowCc.send("addfollow:" + nowId + "/" + id);
 
-						if (nowCc.getChkMessage().indexOf("true") != -1) {
+						if (nowCc.getReceiveMessage().indexOf("true") != -1) {
 							FollowBtn.setText("Unfollow");
 						}
 					} else if (FollowBtn.getText().equals("Unfollow")) {
 						nowCc.send("delfollow:" + nowId + "/" + id);
 
-						if (nowCc.getChkMessage().indexOf("true") != -1) {
+						if (nowCc.getReceiveMessage().indexOf("true") != -1) {
 							FollowBtn.setText("Follow");
 						}
 					}
@@ -395,33 +395,40 @@ public class HomeFrame extends JFrame {
 
 	private void createDirectMessage() {
 
-//		tab_3.setLayout(null);
-//		tab_3.setBorder(new EmptyBorder(5, 5, 5, 5));
-//
-//		JScrollPane scrollPane = new JScrollPane();
-//		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-//		scrollPane.setBounds(0, 0, 480, 435);
-//		scrollPane.setPreferredSize(new Dimension(450, 1000));
-//		tab_3.add(scrollPane);
-//
-//		JPanel oneUserPanel = new JPanel();
-//		oneUserPanel.setLayout(new BoxLayout(oneUserPanel, BoxLayout.Y_AXIS));
-//
-//		settingViewDM(oneUserPanel);
-//		scrollPane.setViewportView(oneUserPanel);
+		tab_3.setLayout(null);
+		tab_3.setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+		scrollPane.setBounds(0, 0, 480, 435);
+		scrollPane.setPreferredSize(new Dimension(450, 1000));
+		tab_3.add(scrollPane);
+
+		JPanel oneUserPanel = new JPanel();
+		oneUserPanel.setLayout(new BoxLayout(oneUserPanel, BoxLayout.Y_AXIS));
+
+		settingViewDM(oneUserPanel);
+		scrollPane.setViewportView(oneUserPanel);
+		
 	}
 
 	private void settingViewDM(JPanel oneUserPanel) {
-		OneDMFrame oneDMFrame = new OneDMFrame();
+		OneDMFrame oneDMFrame = new OneDMFrame(nowCc, nowId);
 
 		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dm/" + nowId);
-
-		for (int i = 0; i < dmList.size(); i++) {
-			DirectMessageDTO dm = (DirectMessageDTO) dmList.get(i);
-			oneDMFrame.oneDM(oneUserPanel, dm, nowCc);
+		if (dmList != null || dmList.size() > 0) {
+			for (int i = 0; i < dmList.size(); i++) {
+				DirectMessageDTO dm = (DirectMessageDTO) dmList.get(i);
+				oneUserPanel.add(oneDMFrame.oneDM(dm));
+			}
+		} else {
+			JPanel temp = new JPanel();
+			temp.setLayout(new BorderLayout());
+			JLabel empty = new JLabel("Empty Post");
+			empty.setHorizontalAlignment(JLabel.CENTER);
+			temp.add(empty, "Center");
+			oneUserPanel.add(temp);
 		}
-
 	}
 
 	private void createSearch() {

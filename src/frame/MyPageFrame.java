@@ -30,10 +30,7 @@ public class MyPageFrame extends JFrame {
 	MyPageFrame(ClientChat cc, String id) {
 		this.nowCc = cc;
 		this.nowId = id;
-
-	//	cc.send("myPage:" + id);
 		MemberDTO my = (MemberDTO) cc.getObject("myPage:" + id);
-
 		Frame(my);
 	}
 
@@ -140,7 +137,7 @@ public class MyPageFrame extends JFrame {
 				}
 				nowCc.send(msg);
 
-				if (nowCc.getChkMessage().indexOf("true") != -1) {
+				if (nowCc.getReceiveMessage().indexOf("true") != -1) {
 					dispose();
 				}
 			}

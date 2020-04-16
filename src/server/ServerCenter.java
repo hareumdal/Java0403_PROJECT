@@ -67,6 +67,8 @@ public class ServerCenter {
 			post(msg);
 		} else if (msg.indexOf("favorite:") != -1) {
 			list(msg);
+		} else if (msg.indexOf("dm") != -1) {
+			getList(msg);
 		}
 	}
 
@@ -96,6 +98,7 @@ public class ServerCenter {
 			String id = reMsg.substring(0, reMsg.indexOf("/"));
 			String post = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
 
+			
 			PostDTO p = new PostDTO();
 			p.setId(id);
 			p.setText(post);
@@ -103,7 +106,7 @@ public class ServerCenter {
 			if (Dc.insert("post", p)) {
 				nowSc.send("Write true");
 			} else {
-				if (post.length() > 200) {
+				if (post.length() > 200) { // 서버까지 보내기 전에 글자수를 WritePostFrame에서 먼제 체크하고 해결하는 방법 생각해 보기
 					nowSc.send("Write false : text length over 200");
 				} else {
 					nowSc.send("Write false : Please input text");
@@ -302,6 +305,9 @@ public class ServerCenter {
 				break;
 			case "friend":
 				os.writeObject(Dc.getDB("friend", keyword));
+				break;
+			case "dm":
+				os.writeObject(Dc.getDB("directmessage", keyword));
 				break;
 			}
 
