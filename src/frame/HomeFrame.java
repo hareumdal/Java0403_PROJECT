@@ -32,7 +32,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientChat;
-import db.DirectMessageDTO;
+import db.DmroomDAO;
+import db.DmroomDTO;
 import db.MemberDTO;
 import db.PostDTO;
 
@@ -232,6 +233,34 @@ public class HomeFrame extends JFrame {
 		IdLabel.setBounds(30, 55, 120, 15);
 		IdLabel.setFont(new Font("Dialog", Font.BOLD, 20));
 		tab_2.add(IdLabel);
+//
+		JButton DMBtn = new JButton("DM");
+		DMBtn.setBounds(140, 55, 65, 20);
+		DMBtn.setBorderPainted(false);
+		DMBtn.setContentAreaFilled(false);
+		tab_2.add(DMBtn);
+		DMBtn.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if (nowId.equals(id)) { // 내 거면 디엠 ㄴㄴ
+				} else if (!nowId.equals(id)) { // 타 유저의 프로필이 맞다면 디엠 ㅇㅇ
+					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc.getObject("searchdm:" + "dmroom/" + nowId + "/" + id + "/t");
+
+					if (dmRoomName.size() > 0) {
+						DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(0);
+						MessageFrame messageFrame = new MessageFrame(nowCc, nowId, dmroom.getRoomname());
+						nowCc.setOpendWindowDM(messageFrame);
+					} else { // 새로운 방을 만들기 // 방이름은 랜덤하게?
+						nowCc.send("makedmRoom:" + id + "/" + nowId + "/ka");
+						MessageFrame messageFrame = new MessageFrame(nowCc, id, "ka");
+						
+						nowCc.setOpendWindowDM(messageFrame);
+					}
+				}
+			}
+		});
 
 		// 친구 목록 Button
 		JButton FrListBtn = new JButton("Follow List");
@@ -305,7 +334,7 @@ public class HomeFrame extends JFrame {
 
 		tab_2.add(scrollPane);
 
-		if (this.nowId.equals(id)) {
+		if (nowId.equals(id)) {
 			JButton MyPageBtn = new JButton("MyPage");
 			MyPageBtn.setBounds(12, 410, 97, 23);
 			tab_2.add(MyPageBtn);
@@ -329,10 +358,10 @@ public class HomeFrame extends JFrame {
 			FollowBtn.setBounds(12, 410, 97, 23);
 
 			nowCc.send("chkfollow:" + nowId + "/" + id);
-
+			System.out.println("HomeF:::chkfollow:::" + nowCc.getReceiveMessage());
 			if (nowCc.getReceiveMessage().contains("true")) {
 				FollowBtn.setText("Unfollow");
-			} else {
+			} else if (nowCc.getReceiveMessage().contains("false")){
 				FollowBtn.setText("Follow");
 			}
 
@@ -409,16 +438,16 @@ public class HomeFrame extends JFrame {
 
 		settingViewDM(oneUserPanel);
 		scrollPane.setViewportView(oneUserPanel);
-		
+
 	}
 
 	private void settingViewDM(JPanel oneUserPanel) {
 		OneDMFrame oneDMFrame = new OneDMFrame(nowCc, nowId);
 
-		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dm/" + nowId);
-		if (dmList != null || dmList.size() > 0) {
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
+		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
-				DirectMessageDTO dm = (DirectMessageDTO) dmList.get(i);
+				DmroomDTO dm = (DmroomDTO) dmList.get(i);
 				oneUserPanel.add(oneDMFrame.oneDM(dm));
 			}
 		} else {

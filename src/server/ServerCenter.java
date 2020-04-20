@@ -6,6 +6,8 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import db.DAOCenter;
+import db.DirectMessageDTO;
+import db.DmroomDTO;
 import db.FavoriteDTO;
 import db.FriendDTO;
 import db.MemberDTO;
@@ -68,13 +70,63 @@ public class ServerCenter {
 		} else if (msg.indexOf("favorite:") != -1) {
 			list(msg);
 		} else if (msg.indexOf("dm") != -1) {
+			dm(msg);
+		}
+	}
+
+	private void dm(String msg) {
+		if (msg.contains("dmroom/")) {
 			getList(msg);
+		} else if (msg.contains("dm/")) {
+			getList(msg);
+		} else if (msg.contains("senddm:")) {
+			String targetID = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
+			String reMsg = msg.substring(msg.indexOf("/t") + 2, msg.length());
+			String myId = reMsg.substring(0, reMsg.indexOf("/"));
+			String dm = reMsg.substring(reMsg.indexOf("/") + 1, reMsg.lastIndexOf("/"));
+			String roomname = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
+
+			DirectMessageDTO dmroom = new DirectMessageDTO();
+
+			dmroom.setRoomname(roomname);
+			dmroom.setId(myId);
+			dmroom.setMessage(dm);
+			
+			Dc.insert("directmessage", dmroom);
+			
+			for (int i = 0; i < sList.size(); i++) {
+				if (targetID.equals(sList.get(i).getNowScId())) {
+					dm = "[@" + myId + "]" + dm;
+					sList.get(i).send(dm);
+				}
+			}
+			
+		} else if (msg.contains("searchdm:")) {
+			getList(msg);
+		} else if (msg.contains("makedmRoom")) {
+			String targetID = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
+			String reMsg = msg.substring(msg.indexOf("/") + 1, msg.length());
+			String myId = reMsg.substring(0, reMsg.indexOf("/"));
+			String roomname = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
+			
+			DmroomDTO dmroom = new DmroomDTO();
+			dmroom.setRoomname(roomname);
+			dmroom.setId(myId);
+			
+			Dc.insert("dmroom", dmroom);
+			
+			dmroom = new DmroomDTO();
+			dmroom.setRoomname(roomname);
+			dmroom.setId(targetID);
+			
+			Dc.insert("dmroom", dmroom);
 		}
 	}
 
 	private void list(String msg) {
 		String myId = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
 		String postNo = msg.substring(msg.indexOf("/") + 1, msg.length());
+
 		FavoriteDTO fv = new FavoriteDTO();
 		fv.setNo(postNo);
 		fv.setId(myId);
@@ -98,7 +150,6 @@ public class ServerCenter {
 			String id = reMsg.substring(0, reMsg.indexOf("/"));
 			String post = reMsg.substring(reMsg.lastIndexOf("/") + 1, reMsg.length());
 
-			
 			PostDTO p = new PostDTO();
 			p.setId(id);
 			p.setText(post);
@@ -152,8 +203,10 @@ public class ServerCenter {
 			}
 		} else if (msg.contains("chkfollow:")) {
 			if (Dc.select("friend", f)) {
+				System.out.println("Server:::chkfollow::true");
 				nowSc.send("true");
 			} else {
+				System.out.println("Server:::chkfollow::false");
 				nowSc.send("false");
 			}
 		}
@@ -269,6 +322,12 @@ public class ServerCenter {
 				case "friend":
 					os.writeObject(Dc.getDB("friend"));
 					break;
+				case "directmessage":
+					os.writeObject(Dc.getDB("friend"));
+					break;
+				case "dmroom":
+					os.writeObject(Dc.getDB("friend"));
+					break;
 				}
 
 				byte[] resultByte = bos.toByteArray();
@@ -306,8 +365,11 @@ public class ServerCenter {
 			case "friend":
 				os.writeObject(Dc.getDB("friend", keyword));
 				break;
-			case "dm":
+			case "directmessage":
 				os.writeObject(Dc.getDB("directmessage", keyword));
+				break;
+			case "dmroom":
+				os.writeObject(Dc.getDB("dmroom", keyword));
 				break;
 			}
 
@@ -363,12 +425,12 @@ public class ServerCenter {
 		m.setId(id);
 		m.setPwd(pwd);
 
-			nowSc.send("Login true");
-			//nowSc.send(reMsg);
-			nowSc.receiveObject();
-			System.out.println("server:::::" + nowSc.getPortNum());
-			nowSc.send("port:" + nowSc.getPortNum());
-			if (Dc.select("member", m)) {
+		nowSc.send("Login true");
+		// nowSc.send(reMsg);
+		nowSc.receiveObject();
+		System.out.println("server:::::" + nowSc.getPortNum());
+		nowSc.send("port:" + nowSc.getPortNum());
+		if (Dc.select("member", m)) {
 		} else {
 			nowSc.send("Login false");
 		}

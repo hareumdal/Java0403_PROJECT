@@ -3,7 +3,6 @@ package db;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 public class DAOCenter {
 	private Connection con = null;
@@ -13,6 +12,8 @@ public class DAOCenter {
 	private PostDAO pDAO = null;
 	private FavoriteDAO fDAO = null;
 	private FriendDAO frDAO = null;
+	private DirectMessageDAO dmDAO = null;
+	private DmroomDAO dmrDAO = null;
 	
 	private static DAOCenter DAOCenter = null;
 	
@@ -23,6 +24,8 @@ public class DAOCenter {
 			pDAO = PostDAO.getInstance(con);
 			fDAO = FavoriteDAO.getInstance(con);
 			frDAO = FriendDAO.getInstance(con);
+			dmDAO = DirectMessageDAO.getInstance(con);
+			dmrDAO = DmroomDAO.getInstance(con);
 		}
 	}
 	
@@ -105,6 +108,12 @@ public class DAOCenter {
 				break;
 			case "friend" :
 				Dif = frDAO;
+				break;
+			case "directmessage" :
+				Dif = dmDAO;
+				break;
+			case "dmroom" :
+				Dif = dmrDAO;
 				break;
 		}
 	}

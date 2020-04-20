@@ -7,7 +7,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 
-public class DirectMessageDAO implements DAOInterface{
+public class DirectMessageDAO implements DAOInterface {
 	private static Connection con = null;
 	private Statement stmt = null;
 	private ResultSet rs = null;
@@ -30,16 +30,14 @@ public class DirectMessageDAO implements DAOInterface{
 	public boolean insert(Object DTO) {
 		try {
 			DirectMessageDTO dm = (DirectMessageDTO) DTO;
-			String sql = "insert into directmessage values(?, sysdate, ?, ?, ?)";
+			String sql = "insert into directmessage values(?, sysdate, ?, ?)";
 			PreparedStatement psmt = con.prepareStatement(sql);
 
-		
 			psmt.setString(1, dm.getRoomname());
-			psmt.setString(2, dm.getDay());
-			psmt.setString(3, dm.getSendid());
-			psmt.setString(4, dm.getReceiveid());
-			psmt.setString(5, dm.getDm());
-			
+		
+			psmt.setString(2, dm.getId());
+			psmt.setString(3, dm.getMessage());
+
 			int a = psmt.executeUpdate();
 
 			if (a == 1) {
@@ -74,7 +72,7 @@ public class DirectMessageDAO implements DAOInterface{
 			psmt.setString(1, s);
 
 			int cnt = psmt.executeUpdate();
-
+			
 			if (cnt == 1) {
 				return true;
 			}
@@ -102,7 +100,7 @@ public class DirectMessageDAO implements DAOInterface{
 		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-			String sql = "select * from directmessage order by day desc";
+			String sql = "select * from directmessage";
 			stmt = con.prepareStatement(sql);
 
 			if (stmt != null) {
@@ -112,10 +110,9 @@ public class DirectMessageDAO implements DAOInterface{
 
 					p.setRoomname(rs.getString("roomname"));
 					p.setDay(rs.getString("day"));
-					p.setSendid("sendid");
-					p.setReceiveid(rs.getString("receiveid"));
-					p.setDm(rs.getString("dm"));
-				
+					p.setId("sendid");
+					p.setMessage(rs.getString("message"));
+
 					pList.add(p);
 				}
 			}
@@ -132,26 +129,24 @@ public class DirectMessageDAO implements DAOInterface{
 		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-			if (s.contains("/t")) {
-				String id = s.substring(0, s.indexOf("/"));
-				String sql = "select * from directmessage where roomname=?";
 
-				PreparedStatement psmt = con.prepareStatement(sql);
-				psmt.setString(1, s);
-			
-				rs = psmt.executeQuery();
+			String sql = "select * from directmessage where roomname=?";
 
-				while (rs.next()) {
-					DirectMessageDTO p = new DirectMessageDTO();
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
 
-					p.setRoomname(rs.getString("roomname"));
-					p.setDay(rs.getString("day"));
-					p.setSendid("sendid");
-					p.setReceiveid(rs.getString("receiveid"));
-					p.setDm(rs.getString("dm"));
-					pList.add(p);
-				}
-			} 
+			rs = psmt.executeQuery();
+
+			while (rs.next()) {
+				DirectMessageDTO p = new DirectMessageDTO();
+
+				p.setRoomname(rs.getString("roomname"));
+				p.setDay(rs.getString("day"));
+				p.setId("id");
+				p.setMessage(rs.getString("message"));
+				pList.add(p);
+			}
+
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

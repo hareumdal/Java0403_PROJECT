@@ -6,11 +6,13 @@ import java.io.InputStream;
 import java.io.ObjectInputStream;
 import java.io.OutputStream;
 import java.net.Socket;
+import java.util.ArrayList;
 
 import frame.ChkFrame;
 import frame.HomeFrame;
 import frame.JoinFrame;
 import frame.LoginFrame;
+import frame.MessageFrame;
 
 public class ClientChat {
 	private Socket withServerDM = null;
@@ -29,12 +31,34 @@ public class ClientChat {
 
 	private ClientChat c = this;
 
+	private MessageFrame opendWindowDM = null;
+	
+	
+//	private ArrayList<MessageFrame> opendWindowDM = new ArrayList<>();
+//	public ArrayList<MessageFrame> getOpendWindowDM() {
+//		return opendWindowDM;
+//	}
+//	public void setOpendWindowDM(MessageFrame opendWindowDM) {
+//		opendWindowDM.add(opendWindowDM);
+//	}
+	
+	
+	
 	ClientChat(Socket s) {
 		this.withServerDM = s;
 		receive();
 		login(this);
 	}
 
+	public MessageFrame getOpendWindowDM() {
+		return opendWindowDM;
+	}
+
+	public void setOpendWindowDM(MessageFrame opendWindowDM) {
+		this.opendWindowDM = opendWindowDM;
+	}
+
+	
 	public String getMsg(String msg) {
 		send(msg);
 		receive();
@@ -62,16 +86,18 @@ public class ClientChat {
 						String reMsg = new String(buffer);
 						reMsg = reMsg.trim();
 						System.out.println(reMsg);
-						System.out.println("CC:::::" + reMsg);
+						
 						if (reMsg.indexOf("port") != -1) {
 							port = Integer.valueOf(reMsg.substring(reMsg.indexOf(":") + 1, reMsg.length()));
 							withServerObject = new Socket("10.0.0.53", port);
+						} else if (reMsg.contains("[")) {
+							opendWindowDM.setMsg(reMsg);
 						} else {
 							if (reMsg.contains("MyPage Delete true")) {
 								System.exit(0);
 							}
-							ChkFrame chkF = new ChkFrame(reMsg, c);
 							receiveMsg = reMsg;
+							ChkFrame chkF = new ChkFrame(reMsg, c);
 						}
 					}
 				} catch (IOException e) {
@@ -113,18 +139,18 @@ public class ClientChat {
 		try {
 			seMsg = withServerObject.getOutputStream();
 			seMsg.write(msg.getBytes());
+
 			reMsg = withServerObject.getInputStream();
 			byte[] reBuffer = new byte[1024];
 			reMsg.read(reBuffer);
 
 			ByteArrayInputStream bis = new ByteArrayInputStream(reBuffer);
 			ObjectInputStream ois = new ObjectInputStream(bis);
-
-			//Object o = ois.readObject();
-			return ois.readObject();
+			Object o = ois.readObject();
+			return o;
 		} catch (IOException | ClassNotFoundException e) {
 			e.printStackTrace();
-		} 
+		}
 		return null;
 	}
 

@@ -60,7 +60,6 @@ public class FriendFrame extends JFrame {
 			String FriendId = f.getYourId();
 			myFList.add(viewMyFList(FriendId));
 		}
-
 		this.add(myFriendAll);
 	}
 
