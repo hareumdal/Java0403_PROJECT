@@ -86,46 +86,43 @@ public class DmroomDAO implements DAOInterface {
 
 	@Override
 	public Object getDBList(String tName, String s) {
-		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-//			if (s.contains("/t")) {
-//				String myId = s.substring(0, s.indexOf("/"));
-//				String yourid = s.substring(s.indexOf("/") + 1, s.lastIndexOf("/"));
+			if (s.contains("/t")) {
+		
+//				String nowId = s.substring(0, s.indexOf("/"));
+//				 String yourid = s.substring(s.indexOf("/")+1, s.lastIndexOf("/"));
+//				
+//			String sql = "select id from dmroom where roomname=?";
 //
-//				String sql = "select roomname from dmroom where (select roomname from dmroom where Id=?) = (select roomname from dmroom where Id=?) group by roomname";
+//			PreparedStatement psmt = con.prepareStatement(sql);
+//			psmt.setString(1, roomname);
+//			rs = psmt.executeQuery();
+//
+//			while (rs.next()) {
+//				DmroomDTO dmr = new DmroomDTO();
+//				dmr.setId(rs.getString("id"));
+//				pList.add(dmr);
+//			}
+//				
+//				
+				
+				
+//				String roomname = s.substring(0, s.lastIndexOf("/"));
+//					
+//				String sql = "select id from dmroom where roomname=?";
 //
 //				PreparedStatement psmt = con.prepareStatement(sql);
-//				psmt.setString(1, myId);
-//				psmt.setString(2, yourid);
+//				psmt.setString(1, roomname);
 //				rs = psmt.executeQuery();
 //
 //				while (rs.next()) {
 //					DmroomDTO dmr = new DmroomDTO();
-//					dmr.setRoomname(rs.getString("roomname"));
+//					dmr.setId(rs.getString("id"));
 //					pList.add(dmr);
 //				}
-//			} 	
-			if (s.contains("/")) {
-				//String myId = s.substring(0, s.indexOf("/"));
-				String roomname = s.substring(0, s.lastIndexOf("/"));
-System.out.println("DMRoomDAO:::::/"+roomname);
-					
-				String sql = "select id from dmroom and roomname=?";
-
-				PreparedStatement psmt = con.prepareStatement(sql);
-			//	psmt.setString(1, myId);
-				psmt.setString(1, roomname);
-				rs = psmt.executeQuery();
-
-				while (rs.next()) {
-					DmroomDTO dmr = new DmroomDTO();
-				//	dmr.setRoomname(rs.getString("roomname"));
-					dmr.setRoomname(rs.getString("id"));
-					pList.add(dmr);
-				}
 			} else {
-				String sql = "select * from dmroom where id=?";
+				String sql = "select * from dmroom where roomname in (select roomname from dmroom where id=?)";
 				PreparedStatement psmt = con.prepareStatement(sql);
 				psmt.setString(1, s);
 

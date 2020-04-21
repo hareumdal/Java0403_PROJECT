@@ -13,6 +13,7 @@ import java.awt.event.WindowListener;
 import java.awt.font.TextAttribute;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Random;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
@@ -32,7 +33,6 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientChat;
-import db.DmroomDAO;
 import db.DmroomDTO;
 import db.MemberDTO;
 import db.PostDTO;
@@ -53,6 +53,8 @@ public class HomeFrame extends JFrame {
 	private static String nowId = null;
 
 	private static HomeFrame HomeF = null;
+
+	private Random r = new Random();
 
 	private HomeFrame() {
 		super("SNS Program");
@@ -239,24 +241,31 @@ public class HomeFrame extends JFrame {
 		DMBtn.setBorderPainted(false);
 		DMBtn.setContentAreaFilled(false);
 		tab_2.add(DMBtn);
-		DMBtn.addActionListener(new ActionListener() {
 
+		char[] rAlphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's',
+				't', 'u', 'v', 'w', 'x', 'y', 'z' };
+
+		String setRoomName = "" + rAlphabet[r.nextInt(25) + 1] + rAlphabet[r.nextInt(26) + 1] + r.nextInt(9999);
+
+		DMBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				if (nowId.equals(id)) { // 내 거면 디엠 ㄴㄴ
 				} else if (!nowId.equals(id)) { // 타 유저의 프로필이 맞다면 디엠 ㅇㅇ
-					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc
-							.getObject("searchdm:" + "dmroom/" + nowId + "/" + id + "/t");
-
+					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc.getObject("searchdm:" + "dmroom/" + nowId);
 					if (dmRoomName.size() > 0) {
-						DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(0);
-						MessageFrame messageFrame = new MessageFrame(nowCc, id, dmroom.getRoomname());
-						nowCc.setOpendWindowDM(messageFrame);
+						for (int i = 0; i < dmRoomName.size(); i++) {
+							DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(i);
+							if (dmroom.getId().equals(id)) {
+								MessageFrame messageFrame = new MessageFrame(nowCc, id, dmroom.getRoomname());
+								nowCc.setOpendWindowDM(messageFrame);
+								break;
+							}
+						}
 					} else { // 새로운 방을 만들기 // 방이름은 랜덤하게?
-						nowCc.send("makedmRoom:" + id + "/" + nowId + "/ka");
-						MessageFrame messageFrame = new MessageFrame(nowCc, id, "ka");
-
+						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
+						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
 						nowCc.setOpendWindowDM(messageFrame);
 					}
 				}
@@ -443,8 +452,8 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void settingViewDM(JPanel oneUserPanel) {
-
 		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
+
 		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
 				DmroomDTO dm = (DmroomDTO) dmList.get(i);

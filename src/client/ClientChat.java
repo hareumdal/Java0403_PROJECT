@@ -33,17 +33,6 @@ public class ClientChat {
 
 	private MessageFrame opendWindowDM = null;
 	
-	
-//	private ArrayList<MessageFrame> opendWindowDM = new ArrayList<>();
-//	public ArrayList<MessageFrame> getOpendWindowDM() {
-//		return opendWindowDM;
-//	}
-//	public void setOpendWindowDM(MessageFrame opendWindowDM) {
-//		opendWindowDM.add(opendWindowDM);
-//	}
-	
-	
-	
 	ClientChat(Socket s) {
 		this.withServerDM = s;
 		receive();
@@ -141,7 +130,7 @@ public class ClientChat {
 			seMsg.write(msg.getBytes());
 
 			reMsg = withServerObject.getInputStream();
-			byte[] reBuffer = new byte[1024];
+			byte[] reBuffer = new byte[2048];
 			reMsg.read(reBuffer);
 
 			ByteArrayInputStream bis = new ByteArrayInputStream(reBuffer);
@@ -154,59 +143,11 @@ public class ClientChat {
 		return null;
 	}
 
-//	public void sendRequestObject(String msg) {
-//		try {
-//			seMsg = withServerObject.getOutputStream();
-//			seMsg.write(msg.getBytes());
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	public Object receiveObject() {
-//		try {
-//			reMsg = withServerObject.getInputStream();
-//			byte[] reBuffer = new byte[1024];
-//			reMsg.read(reBuffer);
-//
-//			ByteArrayInputStream bis = new ByteArrayInputStream(reBuffer);
-//			ObjectInputStream ois = new ObjectInputStream(bis);
-//
-//			Object o = ois.readObject();
-//
-//			return o;
-//		} catch (Exception e) {
-//			e.printStackTrace();
-//		}
-//		return null;
-//	}
 
 	public void Join() {
 		JoinFrame joinF = new JoinFrame(this);
 	}
 
-//	public void chkSet(String msg) {
-//		try {
-//			seMsg = withServerDM.getOutputStream();
-//			seMsg.write(msg.getBytes());
-//
-//			reMsg = withServerDM.getInputStream();
-//			byte[] buffer = new byte[256];
-//			reMsg.read(buffer);
-//			chk = new String(buffer);
-//			chk = chk.trim();
-//
-//			System.out.println("/CheckMessage:" + chk);
-//
-//			if (chk.contains("MyPage Delete true")) {
-//				System.exit(0);
-//			}
-//			ChkFrame chkF = new ChkFrame(chk, this);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
 
 	public String getChkMessage() {
 		return chk;

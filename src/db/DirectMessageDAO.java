@@ -34,7 +34,7 @@ public class DirectMessageDAO implements DAOInterface {
 			PreparedStatement psmt = con.prepareStatement(sql);
 
 			psmt.setString(1, dm.getRoomname());
-		
+
 			psmt.setString(2, dm.getId());
 			psmt.setString(3, dm.getMessage());
 
@@ -72,7 +72,7 @@ public class DirectMessageDAO implements DAOInterface {
 			psmt.setString(1, s);
 
 			int cnt = psmt.executeUpdate();
-			
+
 			if (cnt == 1) {
 				return true;
 			}
@@ -129,22 +129,40 @@ public class DirectMessageDAO implements DAOInterface {
 		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
+			if (s.contains("/")) {
+				String ss = s.substring(0, s.indexOf("/"));
+				System.out.println("DirectMessgeDAO:::getDBList:: ss" + ss);
+				String sql = "select * from directmessage where roomname=? and rownum=1 order by day desc";
+				PreparedStatement psmt = con.prepareStatement(sql);
+				psmt.setString(1, ss);
 
-			String sql = "select * from directmessage where roomname=?";
+				rs = psmt.executeQuery();
 
-			PreparedStatement psmt = con.prepareStatement(sql);
-			psmt.setString(1, s);
+				while (rs.next()) {
+					DirectMessageDTO p = new DirectMessageDTO();
+					p.setRoomname(rs.getString("roomname"));
+					p.setDay(rs.getString("day"));
+					p.setId("id");
+					p.setMessage(rs.getString("message"));
+					pList.add(p);
+				}
+			} else {
+				String sql = "select * from directmessage where roomname=? order by day asc";
 
-			rs = psmt.executeQuery();
+				PreparedStatement psmt = con.prepareStatement(sql);
+				psmt.setString(1, s);
 
-			while (rs.next()) {
-				DirectMessageDTO p = new DirectMessageDTO();
+				rs = psmt.executeQuery();
 
-				p.setRoomname(rs.getString("roomname"));
-				p.setDay(rs.getString("day"));
-				p.setId("id");
-				p.setMessage(rs.getString("message"));
-				pList.add(p);
+				while (rs.next()) {
+					DirectMessageDTO p = new DirectMessageDTO();
+
+					p.setRoomname(rs.getString("roomname"));
+					p.setDay(rs.getString("day"));
+					p.setId(rs.getString("id"));
+					p.setMessage(rs.getString("message"));
+					pList.add(p);
+				}
 			}
 
 		} catch (SQLException e) {

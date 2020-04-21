@@ -2,6 +2,7 @@ package frame;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -9,6 +10,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import client.ClientChat;
+import db.DirectMessageDTO;
 import db.DmroomDTO;
 
 public class OneDMFrame {
@@ -38,12 +40,19 @@ public class OneDMFrame {
 			}
 		});
 		
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname()+"/");
+		DirectMessageDTO dmDTO = null;
+		if (dmList.size() > 0) {
+			for (int i = 0; i < dmList.size(); i++) {
+				dmDTO = (DirectMessageDTO) dmList.get(i);
+			}
+		}
 		
 		JLabel lblUserID = new JLabel(yourid);
 		
-		JLabel lblUserNewDM = new JLabel("메세지를 확인하세요!");
+		JLabel lblUserNewDM = new JLabel(dmDTO.getMessage());
 		
-		JLabel lblSendDate = new JLabel("sendDate");
+		JLabel lblSendDate = new JLabel(dmDTO.getDay());
 		
 		GroupLayout gl_oneUser = new GroupLayout(oneUser);
 		gl_oneUser.setHorizontalGroup(
