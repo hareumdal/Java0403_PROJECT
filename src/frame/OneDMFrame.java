@@ -1,8 +1,11 @@
 package frame;
 
+import java.awt.Color;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 import javax.swing.GroupLayout;
 import javax.swing.GroupLayout.Alignment;
@@ -17,15 +20,36 @@ public class OneDMFrame {
 
 	private ClientChat nowCc = null;
 	private String yourid = null;
+	private JPanel oneUser = null;
+	private JLabel lblUserID = null;
+	private JLabel lblUserNewDM = null;
+	private JLabel lblSendDate = null;
 
 	public OneDMFrame(ClientChat nowCc, String yourid) {
 		this.nowCc = nowCc;
 		this.yourid = yourid;
 	}
 
+	public void reOneDM(String dm, String color) {
+		SimpleDateFormat format1 = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		Date time = new Date();
+		String time1 = format1.format(time);
+		
+		dm = dm.substring(dm.indexOf("]")+1, dm.length());
+		lblUserNewDM.setText(dm);
+		
+		lblSendDate.setText(time1);
+		
+		if (color.equals("noncolor")) {
+		} else 	if (color.equals("color")){
+			oneUser.setBackground(Color.RED); // todo: MessageFrame이 켜져 있다면 색깔을 바꾸지 말자!(?)
+		}
+		
+	}
+
 	public JPanel oneDM(DmroomDTO dm) {
 
-		JPanel oneUser = new JPanel();
+		oneUser = new JPanel();
 		oneUser.setBounds(12, 35, 410, 64);
 		oneUser.addMouseListener(new MouseAdapter() { // 생성자가 가진 메소드 사용
 			public void mouseClicked(MouseEvent e) { // 마우스 이벤트 감지
@@ -35,11 +59,13 @@ public class OneDMFrame {
 					// 메세지를 실제 주고 받을 수 있는 창을 열어준다
 					MessageFrame messageFrame = new MessageFrame(nowCc, yourid, dm.getRoomname());
 					nowCc.setOpendWindowDM(messageFrame);
+					oneUser.setBackground(null);
 				}
 			}
 		});
 
-		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname() + "/");
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc
+				.getObject("getList:directmessage/" + dm.getRoomname() + "/");
 		DirectMessageDTO dmDTO = null;
 		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
@@ -47,11 +73,11 @@ public class OneDMFrame {
 			}
 		}
 
-		JLabel lblUserID = new JLabel(yourid);
+		lblUserID = new JLabel(yourid);
 
-		JLabel lblUserNewDM = new JLabel(dmDTO.getMessage());
+		lblUserNewDM = new JLabel(dmDTO.getMessage());
 
-		JLabel lblSendDate = new JLabel(dmDTO.getDay());
+		lblSendDate = new JLabel(dmDTO.getDay());
 
 		GroupLayout gl_oneUser = new GroupLayout(oneUser);
 		gl_oneUser.setHorizontalGroup(gl_oneUser.createParallelGroup(Alignment.LEADING).addGroup(gl_oneUser
@@ -69,4 +95,5 @@ public class OneDMFrame {
 		return oneUser;
 
 	}
+
 }

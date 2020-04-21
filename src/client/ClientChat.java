@@ -8,11 +8,13 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.ArrayList;
 
+import db.DmroomDTO;
 import frame.ChkFrame;
 import frame.HomeFrame;
 import frame.JoinFrame;
 import frame.LoginFrame;
 import frame.MessageFrame;
+import frame.OneDMFrame;
 
 public class ClientChat {
 	private Socket withServerDM = null;
@@ -32,7 +34,16 @@ public class ClientChat {
 	private ClientChat c = this;
 
 	private MessageFrame opendWindowDM = null;
-	
+	private OneDMFrame oneDMFrame = null;
+
+	public OneDMFrame getOneDMFrame() {
+		return oneDMFrame;
+	}
+
+	public void setOneDMFrame(OneDMFrame oneDMFrame) {
+		this.oneDMFrame = oneDMFrame;
+	}
+
 	ClientChat(Socket s) {
 		this.withServerDM = s;
 		receive();
@@ -47,7 +58,6 @@ public class ClientChat {
 		this.opendWindowDM = opendWindowDM;
 	}
 
-	
 	public String getMsg(String msg) {
 		send(msg);
 		receive();
@@ -75,12 +85,21 @@ public class ClientChat {
 						String reMsg = new String(buffer);
 						reMsg = reMsg.trim();
 						System.out.println(reMsg);
-						
+
 						if (reMsg.indexOf("port") != -1) {
 							port = Integer.valueOf(reMsg.substring(reMsg.indexOf(":") + 1, reMsg.length()));
 							withServerObject = new Socket("10.0.0.53", port);
 						} else if (reMsg.contains("[")) {
-							opendWindowDM.setMsg(reMsg);
+							if (opendWindowDM == null) {
+								getOneDMFrame().reOneDM(reMsg, "color");
+							} else {
+								if (opendWindowDM.isVisible()) { // 채팅창이 열려 있으면 색깔 바꾸지ㄴㄴ
+									opendWindowDM.setMsg(reMsg);
+									getOneDMFrame().reOneDM(reMsg, "noncolor");
+								} else { // 채팅창이 닫혀 있으면 색깔 바꾸긱ㄱ
+									getOneDMFrame().reOneDM(reMsg, "color");
+								}
+							}
 						} else {
 							if (reMsg.contains("MyPage Delete true")) {
 								System.exit(0);
@@ -143,11 +162,9 @@ public class ClientChat {
 		return null;
 	}
 
-
 	public void Join() {
 		JoinFrame joinF = new JoinFrame(this);
 	}
-
 
 	public String getChkMessage() {
 		return chk;

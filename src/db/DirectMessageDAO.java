@@ -132,7 +132,8 @@ public class DirectMessageDAO implements DAOInterface {
 			if (s.contains("/")) {
 				String ss = s.substring(0, s.indexOf("/"));
 				System.out.println("DirectMessgeDAO:::getDBList:: ss" + ss);
-				String sql = "select * from directmessage where roomname=? and rownum=1 order by day desc";
+				//String sql = "select * from directmessage where roomname=? and rownum=1 order by day desc";
+				String sql = " select * from (select * from directmessage where roomname=? order by day desc) where rownum=1";
 				PreparedStatement psmt = con.prepareStatement(sql);
 				psmt.setString(1, ss);
 

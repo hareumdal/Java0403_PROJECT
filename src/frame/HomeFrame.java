@@ -223,7 +223,6 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void settingViewDM(JPanel oneUserPanel) {
-
 		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
 		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
@@ -232,6 +231,7 @@ public class HomeFrame extends JFrame {
 					ArrayList<Object> dmsgList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname() + "/");
 					if (dmsgList.size() > 0 && (DirectMessageDTO) dmsgList.get(0) != null) {
 						OneDMFrame oneDMFrame = new OneDMFrame(nowCc, dm.getId());
+						nowCc.setOneDMFrame(oneDMFrame);
 						oneUserPanel.add(oneDMFrame.oneDM(dm));
 					} else {
 						//nowCc.send("deldmroom:" + dm.getRoomname());
@@ -246,7 +246,6 @@ public class HomeFrame extends JFrame {
 			temp.add(empty, "Center");
 			oneUserPanel.add(temp);
 		}
-
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
@@ -293,15 +292,13 @@ public class HomeFrame extends JFrame {
 								break;
 							}
 						}
-					} else { // 새로운 방을 만들기 // 방이름은 랜덤하게?
-						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
-						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
-						nowCc.setOpendWindowDM(messageFrame);
-						settingViewDM(oneUserPanel);
-					}
+					} 
+//					
 					if (!tf) {
 						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
+						OneDMFrame oneDMFrame = new OneDMFrame(nowCc, id);
 						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
+						nowCc.setOneDMFrame(oneDMFrame);
 						nowCc.setOpendWindowDM(messageFrame);
 						settingViewDM(oneUserPanel);
 					}

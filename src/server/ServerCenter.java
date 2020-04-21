@@ -118,14 +118,12 @@ public class ServerCenter {
 			dmroom.setId(targetID);
 			
 			Dc.insert("dmroom", dmroom);
-			
-		
 		} else if (msg.contains("deldm")) {
 			String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
 			Dc.delete("dmroom", reMsg);
 		}
 	}
-
+	
 	private void list(String msg) {
 		String myId = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
 		String postNo = msg.substring(msg.indexOf("/") + 1, msg.length());
