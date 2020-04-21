@@ -73,6 +73,9 @@ public class ClientChat {
 	}
 
 	public void receive() {
+		// TODO: 서버에게서 받은 메세지를 체크프레임으로 들고 가서 처리(분석...)해주자
+		// 채팅방이 만들어져 있지 않고 채팅창이 열려 있지 않으면 처리가 이상해짐
+		// 탭을 선택했을 때 리프레쉬/db에 접근하게 
 
 		new Thread(new Runnable() {
 			@Override
@@ -85,21 +88,21 @@ public class ClientChat {
 						String reMsg = new String(buffer);
 						reMsg = reMsg.trim();
 						System.out.println(reMsg);
-
+						
 						if (reMsg.indexOf("port") != -1) {
 							port = Integer.valueOf(reMsg.substring(reMsg.indexOf(":") + 1, reMsg.length()));
 							withServerObject = new Socket("10.0.0.53", port);
 						} else if (reMsg.contains("[")) {
-							if (opendWindowDM == null) {
+							if (opendWindowDM == null && oneDMFrame != null) { 
 								getOneDMFrame().reOneDM(reMsg, "color");
-							} else {
+							} else if (opendWindowDM != null && oneDMFrame != null){
 								if (opendWindowDM.isVisible()) { // 채팅창이 열려 있으면 색깔 바꾸지ㄴㄴ
 									opendWindowDM.setMsg(reMsg);
 									getOneDMFrame().reOneDM(reMsg, "noncolor");
 								} else { // 채팅창이 닫혀 있으면 색깔 바꾸긱ㄱ
 									getOneDMFrame().reOneDM(reMsg, "color");
 								}
-							}
+							} 
 						} else {
 							if (reMsg.contains("MyPage Delete true")) {
 								System.exit(0);

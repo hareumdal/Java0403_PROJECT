@@ -287,6 +287,8 @@ public class HomeFrame extends JFrame {
 							DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(i);
 							if (dmroom.getId().equals(id)) {
 								tf = true;
+								OneDMFrame oneDMFrame = new OneDMFrame(nowCc, id);
+								nowCc.setOneDMFrame(oneDMFrame);
 								MessageFrame messageFrame = new MessageFrame(nowCc, id, dmroom.getRoomname());
 								nowCc.setOpendWindowDM(messageFrame);
 								break;
@@ -302,7 +304,6 @@ public class HomeFrame extends JFrame {
 						nowCc.setOpendWindowDM(messageFrame);
 						settingViewDM(oneUserPanel);
 					}
-
 				}
 			}
 		});
