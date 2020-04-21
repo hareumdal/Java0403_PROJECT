@@ -89,27 +89,27 @@ public class DmroomDAO implements DAOInterface {
 		// TODO Auto-generated method stub
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-			if (s.contains("/t")) {
-			
-				String myId = s.substring(0, s.indexOf("/"));
-				String yourid = s.substring(s.indexOf("/") + 1, s.lastIndexOf("/"));
-
-				String sql = "select roomname from dmroom where (select roomname from dmroom where Id=?) = (select roomname from dmroom where Id=?) group by roomname";
-
-				PreparedStatement psmt = con.prepareStatement(sql);
-				psmt.setString(1, myId);
-				psmt.setString(2, yourid);
-				rs = psmt.executeQuery();
-
-				while (rs.next()) {
-					DmroomDTO dmr = new DmroomDTO();
-					dmr.setRoomname(rs.getString("roomname"));
-					pList.add(dmr);
-				}
-			} 	else if (s.contains("/n")) {
-				String myId = s.substring(0, s.indexOf("/"));
-				String roomname = s.substring(s.indexOf("/") + 1, s.lastIndexOf("/"));
-System.out.println("DMRoomDAO:::::"+myId+"/"+roomname);
+//			if (s.contains("/t")) {
+//				String myId = s.substring(0, s.indexOf("/"));
+//				String yourid = s.substring(s.indexOf("/") + 1, s.lastIndexOf("/"));
+//
+//				String sql = "select roomname from dmroom where (select roomname from dmroom where Id=?) = (select roomname from dmroom where Id=?) group by roomname";
+//
+//				PreparedStatement psmt = con.prepareStatement(sql);
+//				psmt.setString(1, myId);
+//				psmt.setString(2, yourid);
+//				rs = psmt.executeQuery();
+//
+//				while (rs.next()) {
+//					DmroomDTO dmr = new DmroomDTO();
+//					dmr.setRoomname(rs.getString("roomname"));
+//					pList.add(dmr);
+//				}
+//			} 	
+			if (s.contains("/")) {
+				//String myId = s.substring(0, s.indexOf("/"));
+				String roomname = s.substring(0, s.lastIndexOf("/"));
+System.out.println("DMRoomDAO:::::/"+roomname);
 					
 				String sql = "select id from dmroom and roomname=?";
 
@@ -124,8 +124,7 @@ System.out.println("DMRoomDAO:::::"+myId+"/"+roomname);
 					dmr.setRoomname(rs.getString("id"));
 					pList.add(dmr);
 				}
-			} 
-			else {
+			} else {
 				String sql = "select * from dmroom where id=?";
 				PreparedStatement psmt = con.prepareStatement(sql);
 				psmt.setString(1, s);

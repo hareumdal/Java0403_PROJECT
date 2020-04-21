@@ -27,14 +27,14 @@ import db.DmroomDTO;
 public class MessageFrame extends JFrame {
 
 	private ClientChat nowCc = null;
-	private String nowId = null;
+	//private String nowId = null;
 	private String yourid = null;
 
-	public MessageFrame(ClientChat nowCc, String nowId, String roomname) {
+	public MessageFrame(ClientChat nowCc, String yourid, String roomname) {
 		this.nowCc = nowCc;
-		this.nowId = nowId;
+		this.yourid = yourid;
 
-		openChatingRoom(nowId, roomname);
+		openChatingRoom(yourid, roomname);
 
 	}
 
@@ -62,17 +62,13 @@ public class MessageFrame extends JFrame {
 		// 두 번 클릭했었을 때 처음 뙇! 창이 뜰 때 디비에 있던 dm 관련 정보를 가져옴
 		// =>
 		// 이 방에 있는 사람들 목록을 불러오고 대화 목록에 추가하기
-		
-		
-		
-		
-		
-		ArrayList<Object> dmRommList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId + "/" + roomname + "\n");
+		ArrayList<Object> dmRommList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + roomname+"/");
 		// 이 방에서 대화한 정보를 모두 불러옴
 		if (dmRommList.size() > 0) {
 			for (int i = 0; i < dmRommList.size(); i++) {
 				DmroomDTO dmroom = (DmroomDTO) dmRommList.get(i);
-				if (dmroom.getId().equals(nowId)) {
+				System.out.println("messagFrame::::::::::::::"+ dmroom.getId());
+				if (dmroom.getId().equals(nowCc.getNowCcId())) {
 				} else {
 					yourid = dmroom.getId();
 				}
@@ -104,7 +100,7 @@ public class MessageFrame extends JFrame {
 				if (textField.getText().length() > 0) {
 					String msg = textField.getText();
 					textField.setText("");
-					nowCc.send("senddm:" + yourid + "/t" + nowId + "/" + msg + "/" + roomname);
+					nowCc.send("senddm:" + yourid + "/t" + nowCc.getNowCcId() + "/" + msg + "/" + roomname);
 					setMsg(msg);
 				}
 			}

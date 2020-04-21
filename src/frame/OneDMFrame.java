@@ -14,11 +14,11 @@ import db.DmroomDTO;
 public class OneDMFrame {
 
 	private ClientChat nowCc = null;
-	private String nowId = null;
+	private String yourid = null;
 	
-	public OneDMFrame(ClientChat nowCc, String nowId) {
+	public OneDMFrame(ClientChat nowCc, String yourid) {
 		this.nowCc = nowCc;
-		this.nowId = nowId;
+		this.yourid = yourid;
 	}
 	
 	
@@ -32,14 +32,14 @@ public class OneDMFrame {
 				}
 				if (e.getClickCount() == 2) { // 더블 클릭
 					// 메세지를 실제 주고 받을 수 있는 창을 열어준다
-					MessageFrame messageFrame = new MessageFrame(nowCc, nowId, dm.getRoomname());
+					MessageFrame messageFrame = new MessageFrame(nowCc, yourid, dm.getRoomname());
 					nowCc.setOpendWindowDM(messageFrame);
 				}
 			}
 		});
 		
 		
-		JLabel lblUserID = new JLabel(nowId);
+		JLabel lblUserID = new JLabel(yourid);
 		
 		JLabel lblUserNewDM = new JLabel("메세지를 확인하세요!");
 		

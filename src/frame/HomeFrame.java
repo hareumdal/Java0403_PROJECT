@@ -246,16 +246,17 @@ public class HomeFrame extends JFrame {
 				// TODO Auto-generated method stub
 				if (nowId.equals(id)) { // 내 거면 디엠 ㄴㄴ
 				} else if (!nowId.equals(id)) { // 타 유저의 프로필이 맞다면 디엠 ㅇㅇ
-					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc.getObject("searchdm:" + "dmroom/" + nowId + "/" + id + "/t");
+					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc
+							.getObject("searchdm:" + "dmroom/" + nowId + "/" + id + "/t");
 
 					if (dmRoomName.size() > 0) {
 						DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(0);
-						MessageFrame messageFrame = new MessageFrame(nowCc, nowId, dmroom.getRoomname());
+						MessageFrame messageFrame = new MessageFrame(nowCc, id, dmroom.getRoomname());
 						nowCc.setOpendWindowDM(messageFrame);
 					} else { // 새로운 방을 만들기 // 방이름은 랜덤하게?
 						nowCc.send("makedmRoom:" + id + "/" + nowId + "/ka");
 						MessageFrame messageFrame = new MessageFrame(nowCc, id, "ka");
-						
+
 						nowCc.setOpendWindowDM(messageFrame);
 					}
 				}
@@ -361,7 +362,7 @@ public class HomeFrame extends JFrame {
 			System.out.println("HomeF:::chkfollow:::" + nowCc.getReceiveMessage());
 			if (nowCc.getReceiveMessage().contains("true")) {
 				FollowBtn.setText("Unfollow");
-			} else if (nowCc.getReceiveMessage().contains("false")){
+			} else if (nowCc.getReceiveMessage().contains("false")) {
 				FollowBtn.setText("Follow");
 			}
 
@@ -442,13 +443,15 @@ public class HomeFrame extends JFrame {
 	}
 
 	private void settingViewDM(JPanel oneUserPanel) {
-		OneDMFrame oneDMFrame = new OneDMFrame(nowCc, nowId);
 
 		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
 		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
 				DmroomDTO dm = (DmroomDTO) dmList.get(i);
-				oneUserPanel.add(oneDMFrame.oneDM(dm));
+				if (!dm.getId().equals(nowId)) {
+					OneDMFrame oneDMFrame = new OneDMFrame(nowCc, dm.getId());
+					oneUserPanel.add(oneDMFrame.oneDM(dm));
+				}
 			}
 		} else {
 			JPanel temp = new JPanel();
