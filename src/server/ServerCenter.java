@@ -101,8 +101,6 @@ public class ServerCenter {
 				}
 			}
 			
-		} else if (msg.contains("searchdm:")) {
-			getList(msg);
 		} else if (msg.contains("makedmRoom")) {
 			String targetID = msg.substring(msg.indexOf(":") + 1, msg.indexOf("/"));
 			String reMsg = msg.substring(msg.indexOf("/") + 1, msg.length());
@@ -120,6 +118,11 @@ public class ServerCenter {
 			dmroom.setId(targetID);
 			
 			Dc.insert("dmroom", dmroom);
+			
+		
+		} else if (msg.contains("deldm")) {
+			String reMsg = msg.substring(msg.indexOf(":") + 1, msg.length());
+			Dc.delete("dmroom", reMsg);
 		}
 	}
 

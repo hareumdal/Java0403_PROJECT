@@ -33,6 +33,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
 import client.ClientChat;
+import db.DirectMessageDTO;
 import db.DmroomDTO;
 import db.MemberDTO;
 import db.PostDTO;
@@ -45,6 +46,7 @@ public class HomeFrame extends JFrame {
 	private JPanel tab_3 = new JPanel();
 	private JPanel tab_4 = new JPanel();
 
+	private JPanel oneUserPanel = null;
 	private JPanel searchP = new JPanel();
 
 	private JButton searchM = new JButton();
@@ -203,7 +205,6 @@ public class HomeFrame extends JFrame {
 	// PostList, PostList를 띄우는 그룹화 된 Panel이 들어갈 JPanel, 글을 보고 있는 사용자 Id
 	private void settingPostView(ArrayList<Object> pList, JPanel postPanel, String id) {
 		OnePostFrame pF = new OnePostFrame(nowCc, nowId);
-
 		if (pList.size() > 0) {
 			ArrayList<Object> fvList = (ArrayList<Object>) nowCc.getObject("getList:favorite/" + nowId);
 			for (int i = 0; i < pList.size(); i++) {
@@ -219,6 +220,33 @@ public class HomeFrame extends JFrame {
 			temp.add(empty, "Center");
 			postPanel.add(temp);
 		}
+	}
+
+	private void settingViewDM(JPanel oneUserPanel) {
+
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
+		if (dmList.size() > 0) {
+			for (int i = 0; i < dmList.size(); i++) {
+				DmroomDTO dm = (DmroomDTO) dmList.get(i);
+				if (!dm.getId().equals(nowId)) {
+					ArrayList<Object> dmsgList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname() + "/");
+					if (dmsgList.size() > 0 && (DirectMessageDTO) dmsgList.get(0) != null) {
+						OneDMFrame oneDMFrame = new OneDMFrame(nowCc, dm.getId());
+						oneUserPanel.add(oneDMFrame.oneDM(dm));
+					} else {
+						//nowCc.send("deldmroom:" + dm.getRoomname());
+					}
+				}
+			}
+		} else {
+			JPanel temp = new JPanel();
+			temp.setLayout(new BorderLayout());
+			JLabel empty = new JLabel("Empty Post");
+			empty.setHorizontalAlignment(JLabel.CENTER);
+			temp.add(empty, "Center");
+			oneUserPanel.add(temp);
+		}
+
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
@@ -245,19 +273,21 @@ public class HomeFrame extends JFrame {
 		char[] rAlphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's',
 				't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-		String setRoomName = "" + rAlphabet[r.nextInt(25) + 1] + rAlphabet[r.nextInt(26) + 1] + r.nextInt(9999);
+		String setRoomName = "" + rAlphabet[r.nextInt(rAlphabet.length)] + rAlphabet[r.nextInt(rAlphabet.length)] + r.nextInt(9999);
 
 		DMBtn.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				boolean tf = false;
 				if (nowId.equals(id)) { // 내 거면 디엠 ㄴㄴ
 				} else if (!nowId.equals(id)) { // 타 유저의 프로필이 맞다면 디엠 ㅇㅇ
-					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc.getObject("searchdm:" + "dmroom/" + nowId);
+					ArrayList<Object> dmRoomName = (ArrayList<Object>) nowCc.getObject("getList:" + "dmroom/" + nowId);
 					if (dmRoomName.size() > 0) {
 						for (int i = 0; i < dmRoomName.size(); i++) {
 							DmroomDTO dmroom = (DmroomDTO) dmRoomName.get(i);
 							if (dmroom.getId().equals(id)) {
+								tf = true;
 								MessageFrame messageFrame = new MessageFrame(nowCc, id, dmroom.getRoomname());
 								nowCc.setOpendWindowDM(messageFrame);
 								break;
@@ -267,7 +297,15 @@ public class HomeFrame extends JFrame {
 						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
 						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
 						nowCc.setOpendWindowDM(messageFrame);
+						settingViewDM(oneUserPanel);
 					}
+					if (!tf) {
+						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
+						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
+						nowCc.setOpendWindowDM(messageFrame);
+						settingViewDM(oneUserPanel);
+					}
+
 				}
 			}
 		});
@@ -443,33 +481,12 @@ public class HomeFrame extends JFrame {
 		scrollPane.setPreferredSize(new Dimension(450, 1000));
 		tab_3.add(scrollPane);
 
-		JPanel oneUserPanel = new JPanel();
+		oneUserPanel = new JPanel();
 		oneUserPanel.setLayout(new BoxLayout(oneUserPanel, BoxLayout.Y_AXIS));
 
 		settingViewDM(oneUserPanel);
 		scrollPane.setViewportView(oneUserPanel);
 
-	}
-
-	private void settingViewDM(JPanel oneUserPanel) {
-		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:dmroom/" + nowId);
-
-		if (dmList.size() > 0) {
-			for (int i = 0; i < dmList.size(); i++) {
-				DmroomDTO dm = (DmroomDTO) dmList.get(i);
-				if (!dm.getId().equals(nowId)) {
-					OneDMFrame oneDMFrame = new OneDMFrame(nowCc, dm.getId());
-					oneUserPanel.add(oneDMFrame.oneDM(dm));
-				}
-			}
-		} else {
-			JPanel temp = new JPanel();
-			temp.setLayout(new BorderLayout());
-			JLabel empty = new JLabel("Empty Post");
-			empty.setHorizontalAlignment(JLabel.CENTER);
-			temp.add(empty, "Center");
-			oneUserPanel.add(temp);
-		}
 	}
 
 	private void createSearch() {

@@ -17,15 +17,14 @@ public class OneDMFrame {
 
 	private ClientChat nowCc = null;
 	private String yourid = null;
-	
+
 	public OneDMFrame(ClientChat nowCc, String yourid) {
 		this.nowCc = nowCc;
 		this.yourid = yourid;
 	}
-	
-	
+
 	public JPanel oneDM(DmroomDTO dm) {
-		
+
 		JPanel oneUser = new JPanel();
 		oneUser.setBounds(12, 35, 410, 64);
 		oneUser.addMouseListener(new MouseAdapter() { // 생성자가 가진 메소드 사용
@@ -39,47 +38,35 @@ public class OneDMFrame {
 				}
 			}
 		});
-		
-		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname()+"/");
+
+		ArrayList<Object> dmList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname() + "/");
 		DirectMessageDTO dmDTO = null;
 		if (dmList.size() > 0) {
 			for (int i = 0; i < dmList.size(); i++) {
 				dmDTO = (DirectMessageDTO) dmList.get(i);
 			}
 		}
-		
+
 		JLabel lblUserID = new JLabel(yourid);
-		
+
 		JLabel lblUserNewDM = new JLabel(dmDTO.getMessage());
-		
+
 		JLabel lblSendDate = new JLabel(dmDTO.getDay());
-		
+
 		GroupLayout gl_oneUser = new GroupLayout(oneUser);
-		gl_oneUser.setHorizontalGroup(
-			gl_oneUser.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_oneUser.createSequentialGroup()
-					.addGap(12)
-					.addGroup(gl_oneUser.createParallelGroup(Alignment.LEADING)
-						.addGroup(gl_oneUser.createSequentialGroup()
-							.addComponent(lblUserID)
-							.addGap(215)
-							.addComponent(lblSendDate, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE))
-						.addComponent(lblUserNewDM, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE)))
-		);
-		gl_oneUser.setVerticalGroup(
-			gl_oneUser.createParallelGroup(Alignment.LEADING)
-				.addGroup(gl_oneUser.createSequentialGroup()
-					.addGap(10)
-					.addGroup(gl_oneUser.createParallelGroup(Alignment.LEADING)
-						.addComponent(lblUserID)
-						.addComponent(lblSendDate))
-					.addGap(14)
-					.addComponent(lblUserNewDM))
-		);
+		gl_oneUser.setHorizontalGroup(gl_oneUser.createParallelGroup(Alignment.LEADING).addGroup(gl_oneUser
+				.createSequentialGroup().addGap(12)
+				.addGroup(gl_oneUser.createParallelGroup(Alignment.LEADING)
+						.addGroup(gl_oneUser.createSequentialGroup().addComponent(lblUserID).addGap(215)
+								.addComponent(lblSendDate, GroupLayout.PREFERRED_SIZE, 135, GroupLayout.PREFERRED_SIZE))
+						.addComponent(lblUserNewDM, GroupLayout.PREFERRED_SIZE, 386, GroupLayout.PREFERRED_SIZE))));
+		gl_oneUser.setVerticalGroup(gl_oneUser.createParallelGroup(Alignment.LEADING)
+				.addGroup(gl_oneUser
+						.createSequentialGroup().addGap(10).addGroup(gl_oneUser.createParallelGroup(Alignment.LEADING)
+								.addComponent(lblUserID).addComponent(lblSendDate))
+						.addGap(14).addComponent(lblUserNewDM)));
 		oneUser.setLayout(gl_oneUser);
-		
-		
 		return oneUser;
-		
+
 	}
 }

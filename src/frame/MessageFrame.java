@@ -31,6 +31,7 @@ public class MessageFrame extends JFrame {
 	private String yourid = null;
 
 	public MessageFrame(ClientChat nowCc, String yourid, String roomname) {
+		super(nowCc.getNowCcId());
 		this.nowCc = nowCc;
 		this.yourid = yourid;
 
@@ -41,7 +42,7 @@ public class MessageFrame extends JFrame {
 	JTextPane textPane = null;
 
 	private void openChatingRoom(String nowId, String roomname) {
-
+		
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(0, 120, 428, 306);
 		JPanel contentPane = new JPanel();
@@ -60,7 +61,6 @@ public class MessageFrame extends JFrame {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 				if (textField.getText().length() > 0) {
 					String msg = textField.getText();
 					textField.setText("");

@@ -62,7 +62,21 @@ public class DmroomDAO implements DAOInterface {
 
 	@Override
 	public boolean delete(String s) {
-		// TODO Auto-generated method stub
+		try {
+			String sql = "delete dmroom where roomname=?";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
+		
+			int cnt = psmt.executeUpdate();
+
+			if (cnt == 1) {
+				return true;
+			}
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+			System.out.println("DB error");
+		}
 		return false;
 	}
 
@@ -88,52 +102,17 @@ public class DmroomDAO implements DAOInterface {
 	public Object getDBList(String tName, String s) {
 		ArrayList<Object> pList = new ArrayList<>();
 		try {
-			if (s.contains("/t")) {
-		
-//				String nowId = s.substring(0, s.indexOf("/"));
-//				 String yourid = s.substring(s.indexOf("/")+1, s.lastIndexOf("/"));
-//				
-//			String sql = "select id from dmroom where roomname=?";
-//
-//			PreparedStatement psmt = con.prepareStatement(sql);
-//			psmt.setString(1, roomname);
-//			rs = psmt.executeQuery();
-//
-//			while (rs.next()) {
-//				DmroomDTO dmr = new DmroomDTO();
-//				dmr.setId(rs.getString("id"));
-//				pList.add(dmr);
-//			}
-//				
-//				
-				
-				
-//				String roomname = s.substring(0, s.lastIndexOf("/"));
-//					
-//				String sql = "select id from dmroom where roomname=?";
-//
-//				PreparedStatement psmt = con.prepareStatement(sql);
-//				psmt.setString(1, roomname);
-//				rs = psmt.executeQuery();
-//
-//				while (rs.next()) {
-//					DmroomDTO dmr = new DmroomDTO();
-//					dmr.setId(rs.getString("id"));
-//					pList.add(dmr);
-//				}
-			} else {
-				String sql = "select * from dmroom where roomname in (select roomname from dmroom where id=?)";
-				PreparedStatement psmt = con.prepareStatement(sql);
-				psmt.setString(1, s);
+			String sql = "select * from dmroom where roomname in (select roomname from dmroom where id=?)";
+			PreparedStatement psmt = con.prepareStatement(sql);
+			psmt.setString(1, s);
 
-				rs = psmt.executeQuery();
+			rs = psmt.executeQuery();
 
-				while (rs.next()) {
-					DmroomDTO dmr = new DmroomDTO();
-					dmr.setRoomname(rs.getString("roomname"));
-					dmr.setId(rs.getString("id"));
-					pList.add(dmr);
-				}
+			while (rs.next()) {
+				DmroomDTO dmr = new DmroomDTO();
+				dmr.setRoomname(rs.getString("roomname"));
+				dmr.setId(rs.getString("id"));
+				pList.add(dmr);
 			}
 		} catch (SQLException e) {
 			// TODO Auto-generated catch block
