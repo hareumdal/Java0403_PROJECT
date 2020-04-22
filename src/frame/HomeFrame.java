@@ -1,6 +1,7 @@
 package frame;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
@@ -29,6 +30,8 @@ import javax.swing.JTextField;
 import javax.swing.ScrollPaneConstants;
 import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
@@ -46,6 +49,7 @@ public class HomeFrame extends JFrame {
 	private JPanel tab_3 = new JPanel();
 	private JPanel tab_4 = new JPanel();
 
+	// private OneDMFrame oneDMFrame = null;
 	private JPanel oneUserPanel = null;
 	private JPanel searchP = new JPanel();
 
@@ -139,6 +143,7 @@ public class HomeFrame extends JFrame {
 
 	private void createTimeline() {
 		// TODO Auto-generated method stub
+
 		tab_1.setLayout(null);
 		tab_1.setBorder(new EmptyBorder(5, 5, 5, 5));
 
@@ -200,6 +205,7 @@ public class HomeFrame extends JFrame {
 		timeline.add(Btn, "South");
 
 		tab_1.add(timeline);
+
 	}
 
 	// PostList, PostList를 띄우는 그룹화 된 Panel이 들어갈 JPanel, 글을 보고 있는 사용자 Id
@@ -210,7 +216,6 @@ public class HomeFrame extends JFrame {
 			for (int i = 0; i < pList.size(); i++) {
 				PostDTO p = (PostDTO) pList.get(i);
 				postPanel.add(pF.viewPost(p, fvList));
-
 			}
 		} else if (pList.size() == 0 || pList == null) {
 			JPanel temp = new JPanel();
@@ -228,13 +233,14 @@ public class HomeFrame extends JFrame {
 			for (int i = 0; i < dmList.size(); i++) {
 				DmroomDTO dm = (DmroomDTO) dmList.get(i);
 				if (!dm.getId().equals(nowId)) {
-					ArrayList<Object> dmsgList = (ArrayList<Object>) nowCc.getObject("getList:directmessage/" + dm.getRoomname() + "/");
+					ArrayList<Object> dmsgList = (ArrayList<Object>) nowCc
+							.getObject("getList:directmessage/" + dm.getRoomname() + "/");
 					if (dmsgList.size() > 0 && (DirectMessageDTO) dmsgList.get(0) != null) {
 						OneDMFrame oneDMFrame = new OneDMFrame(nowCc, dm.getId());
 						nowCc.setOneDMFrame(oneDMFrame);
 						oneUserPanel.add(oneDMFrame.oneDM(dm));
 					} else {
-						//nowCc.send("deldmroom:" + dm.getRoomname());
+						// nowCc.send("deldmroom:" + dm.getRoomname());
 					}
 				}
 			}
@@ -249,13 +255,11 @@ public class HomeFrame extends JFrame {
 	}
 
 	public void createProfile(JPanel tab_2, String id, ClientChat nowCc) {
-		// TODO Auto-generated method stub
-		Object receiveObject = nowCc.getObject("profile:" + id);
-		MemberDTO my = (MemberDTO) receiveObject;
-
 		tab_2.setLayout(null);
 		tab_2.setBorder(new EmptyBorder(5, 5, 5, 5));
 
+		Object receiveObject = nowCc.getObject("profile:" + id);
+		MemberDTO my = (MemberDTO) receiveObject;
 		// 현재 사용자 Id
 		JLabel IdLabel = new JLabel(my.getId());
 		IdLabel.setHorizontalAlignment(SwingConstants.CENTER);
@@ -272,7 +276,8 @@ public class HomeFrame extends JFrame {
 		char[] rAlphabet = { 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'o', 'p', 'q', 'r', 's',
 				't', 'u', 'v', 'w', 'x', 'y', 'z' };
 
-		String setRoomName = "" + rAlphabet[r.nextInt(rAlphabet.length)] + rAlphabet[r.nextInt(rAlphabet.length)] + r.nextInt(9999);
+		String setRoomName = "" + rAlphabet[r.nextInt(rAlphabet.length)] + rAlphabet[r.nextInt(rAlphabet.length)]
+				+ r.nextInt(9999);
 
 		DMBtn.addActionListener(new ActionListener() {
 			@Override
@@ -294,13 +299,13 @@ public class HomeFrame extends JFrame {
 								break;
 							}
 						}
-					} 
+					}
 //					
 					if (!tf) {
 						nowCc.send("makedmRoom:" + id + "/" + nowId + "/" + setRoomName);
 						OneDMFrame oneDMFrame = new OneDMFrame(nowCc, id);
-						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
 						nowCc.setOneDMFrame(oneDMFrame);
+						MessageFrame messageFrame = new MessageFrame(nowCc, id, setRoomName);
 						nowCc.setOpendWindowDM(messageFrame);
 						settingViewDM(oneUserPanel);
 					}
@@ -455,6 +460,7 @@ public class HomeFrame extends JFrame {
 				myPost.repaint();
 			}
 		});
+
 	}
 
 	private void PostWriteBtnListner(JButton PostWriteBtn, ClientChat nowCc) {
@@ -489,6 +495,7 @@ public class HomeFrame extends JFrame {
 
 	private void createSearch() {
 		// TODO Auto-generated method stub
+
 		tab_4.setLayout(new BorderLayout());
 
 		JTextField txtInput = new JTextField();
@@ -515,6 +522,7 @@ public class HomeFrame extends JFrame {
 				}
 			}
 		});
+
 	}
 
 	private void createSearchData(JTextField txtInput) {
@@ -641,4 +649,18 @@ public class HomeFrame extends JFrame {
 		tabPane.add("Search", tab_4);
 	}
 
+	public void setDMTabAlertColor(){
+		tabPane.setBackgroundAt(2, Color.RED);
+		
+		tabPane.addChangeListener(new ChangeListener() {
+			@Override
+			public void stateChanged(ChangeEvent e) {
+				// TODO Auto-generated method stub
+				if (tabPane.getSelectedIndex() == 2) {
+					createDirectMessage();
+					tabPane.setBackgroundAt(2, null);
+				}
+			}
+		});
+	}
 }

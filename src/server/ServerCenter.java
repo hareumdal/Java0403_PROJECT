@@ -426,12 +426,13 @@ public class ServerCenter {
 		m.setId(id);
 		m.setPwd(pwd);
 
-		nowSc.send("Login true");
+		
 		// nowSc.send(reMsg);
 		nowSc.receiveObject();
 		System.out.println("server:::::" + nowSc.getPortNum());
 		nowSc.send("port:" + nowSc.getPortNum());
 		if (Dc.select("member", m)) {
+			nowSc.send("Login true");
 		} else {
 			nowSc.send("Login false");
 		}

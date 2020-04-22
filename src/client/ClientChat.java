@@ -16,7 +16,9 @@ import frame.LoginFrame;
 import frame.MessageFrame;
 import frame.OneDMFrame;
 
-public class ClientChat {
+public class ClientChat { 
+	// TODO: 클라이언트가 이 클래스 안에 있는 Frame들을 다 알아야 할까?
+	
 	private Socket withServerDM = null;
 	private Socket withServerObject = null;
 	private int port = -1;
@@ -36,13 +38,7 @@ public class ClientChat {
 	private MessageFrame opendWindowDM = null;
 	private OneDMFrame oneDMFrame = null;
 
-	public OneDMFrame getOneDMFrame() {
-		return oneDMFrame;
-	}
-
-	public void setOneDMFrame(OneDMFrame oneDMFrame) {
-		this.oneDMFrame = oneDMFrame;
-	}
+	
 
 	ClientChat(Socket s) {
 		this.withServerDM = s;
@@ -56,6 +52,13 @@ public class ClientChat {
 
 	public void setOpendWindowDM(MessageFrame opendWindowDM) {
 		this.opendWindowDM = opendWindowDM;
+	}
+	public OneDMFrame getOneDMFrame() {
+		return oneDMFrame;
+	}
+
+	public void setOneDMFrame(OneDMFrame oneDMFrame) {
+		this.oneDMFrame = oneDMFrame;
 	}
 
 	public String getMsg(String msg) {
@@ -73,9 +76,11 @@ public class ClientChat {
 	}
 
 	public void receive() {
-		// TODO: 서버에게서 받은 메세지를 체크프레임으로 들고 가서 처리(분석...)해주자
+		// TODO: 서버에게서 받은 메세지를 체크프레임으로 들고 가서 처리(분석...)해주자 // 체크프레임으로 가져가서 처리하면 실시간 채팅이 불가
 		// 채팅방이 만들어져 있지 않고 채팅창이 열려 있지 않으면 처리가 이상해짐
-		// 탭을 선택했을 때 리프레쉬/db에 접근하게 
+		// 탭을 선택했을 때 리프레쉬/db에 접근하게
+		
+		// 채팅방이 처음으로 만들어졌을 때 대화상대의 디엠탭에 다른 사람의 이름으로 뜨는 거 수정해야 함
 
 		new Thread(new Runnable() {
 			@Override
@@ -88,18 +93,20 @@ public class ClientChat {
 						String reMsg = new String(buffer);
 						reMsg = reMsg.trim();
 						System.out.println(reMsg);
-						
+
 						if (reMsg.indexOf("port") != -1) {
 							port = Integer.valueOf(reMsg.substring(reMsg.indexOf(":") + 1, reMsg.length()));
 							withServerObject = new Socket("10.0.0.53", port);
 						} else if (reMsg.contains("[")) {
-							if (opendWindowDM == null && oneDMFrame != null) { 
-								getOneDMFrame().reOneDM(reMsg, "color");
-							} else if (opendWindowDM != null && oneDMFrame != null){
-								if (opendWindowDM.isVisible()) { // 채팅창이 열려 있으면 색깔 바꾸지ㄴㄴ
-									opendWindowDM.setMsg(reMsg);
+							if (getOpendWindowDM() == null) { 
+								homeF.setDMTabAlertColor();
+								//getOneDMFrame().reOneDM(reMsg, "color");
+							} else if (getOpendWindowDM() != null){
+								if (getOpendWindowDM().isVisible()) { // 채팅창이 열려 있으면 색깔 바꾸지ㄴㄴ
+									getOpendWindowDM().setMsg(reMsg);
 									getOneDMFrame().reOneDM(reMsg, "noncolor");
 								} else { // 채팅창이 닫혀 있으면 색깔 바꾸긱ㄱ
+									homeF.setDMTabAlertColor();
 									getOneDMFrame().reOneDM(reMsg, "color");
 								}
 							} 
@@ -108,6 +115,7 @@ public class ClientChat {
 								System.exit(0);
 							}
 							receiveMsg = reMsg;
+							
 							ChkFrame chkF = new ChkFrame(reMsg, c);
 						}
 					}
@@ -169,9 +177,9 @@ public class ClientChat {
 		JoinFrame joinF = new JoinFrame(this);
 	}
 
-	public String getChkMessage() {
-		return chk;
-	}
+//	public String getChkMessage() {
+//		return chk;
+//	}
 
 	public void loginSet(String id, String pwd) {
 		String user = "login:" + id + "/" + pwd;

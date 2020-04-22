@@ -22,6 +22,10 @@ public class ChkFrame extends JFrame {
 
 	private String chkMsg = null;
 
+
+	
+	
+	
 	public ChkFrame(String chk, ClientChat c) {
 		super("Check");
 		setResizable(false);
@@ -31,6 +35,11 @@ public class ChkFrame extends JFrame {
 		Frame();
 	}
 
+	
+	
+	
+	
+	
 	private void Frame() {
 		this.setLayout(new BorderLayout());
 		this.setBounds(200, 100, 250, 150);
@@ -82,7 +91,7 @@ public class ChkFrame extends JFrame {
 					textLabel = new JLabel("Post delete");
 				}
 			}
-		} else {
+		}  else {
 			textLabel = new JLabel(chkMsg);
 		}
 		cP.add(textLabel);

@@ -31,20 +31,19 @@ public class OneDMFrame {
 	}
 
 	public void reOneDM(String dm, String color) {
-		SimpleDateFormat format1 = new SimpleDateFormat ("yyyy-MM-dd HH:mm:ss");
+		SimpleDateFormat format1 = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		Date time = new Date();
 		String time1 = format1.format(time);
-		
-		dm = dm.substring(dm.indexOf("]")+1, dm.length());
+
+		dm = dm.substring(dm.indexOf("]") + 1, dm.length());
 		lblUserNewDM.setText(dm);
-		
+
 		lblSendDate.setText(time1);
-		
+
 		if (color.equals("noncolor")) {
-		} else 	if (color.equals("color")){
+		} else if (color.equals("color")) {
 			oneUser.setBackground(Color.RED); // todo: MessageFrame이 켜져 있다면 색깔을 바꾸지 말자!(?)
 		}
-		
 	}
 
 	public JPanel oneDM(DmroomDTO dm) {

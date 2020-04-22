@@ -10,7 +10,7 @@ public class CMain {
 		
 		withServer = new Socket("10.0.0.53", 9999);
 		new ClientChat(withServer);
-
+		
 	}
 
 }
